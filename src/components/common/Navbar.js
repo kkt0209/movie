@@ -13,7 +13,7 @@ const Navbar = () => {
         <ul>
           <li><NavLink to='/' style={({isActive})=>({fontWeight: isActive ? 'bold' : 'normal'})}>홈</NavLink></li>
           <li><NavLink to='/movie' style={({isActive})=>({fontWeight: isActive ? 'bold' : 'normal'})}>영화</NavLink></li>
-          {/* <li><NavLink to='/anime' style={({isActive})=>({fontWeight: isActive ? 'bold' : 'normal'})}>애니</NavLink></li> */}
+          <li><NavLink to='/anime' style={({isActive})=>({fontWeight: isActive ? 'bold' : 'normal'})}>애니</NavLink></li>
           
           { loginUserInfo && <li><span><strong>{loginUserInfo?.name}</strong></span></li>}
           <li>
