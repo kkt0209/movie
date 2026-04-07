@@ -1,16 +1,13 @@
 import { create } from "zustand";
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
-import { handleLogin, readUserInfo } from "db/DB";
+import { addDBReview, authLogin, getDBReview, readUserInfo } from "db/DB";
 
-const defaultMovieReviews = [
-  { id: 1, movieId: "1523145", writer: "test", content: "리뷰1", rating: 5, createdAt: "2026. 4. 1." },
-  { id: 2, movieId: "1523145", writer: "kkt", content: "리뷰2", rating: 1, createdAt: "2026. 4. 1." },
-];
+
 
 const useAppStore = create((set) => ({
   currentUser: null,
   currentUserInfo: null,
-  reviews: defaultMovieReviews,
+  reviews: {},
 
   setCurrentUser: (loginUser) => set({ currentUser: loginUser }),
   setCurrentUserInfo: (loginUser) => set({ currentUserInfo: loginUser }),
@@ -40,18 +37,27 @@ const useAppStore = create((set) => ({
     return () => unsubscribe();
   },
   login: (email, pwd) => {
-    handleLogin(email, pwd);
+    authLogin(email, pwd);
     return 1;
   },
   logout: () => {
     const auth = getAuth();
     signOut(auth);
   },
-  addReview: (review) =>
+  addReview: (review) => 
     set((state) => ({
       reviews: [...state.reviews, review],
+  
   })),
 
+  getReview : async(movieId) => {
+    const reviews = await getDBReview(movieId);
+
+    set(() => ({
+      reviews:reviews,
+    }))
+  }
+  
 }));
 
 export default useAppStore;

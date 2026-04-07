@@ -4,6 +4,7 @@ import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 
 import MovieHero from "components/movie/MovieHero";
 import useAppStore from "store/useAppStore";
+import { addDBReview, getDBReview } from "db/DB";
 
 const MovieDetail = () => {
   // 기본값
@@ -14,10 +15,14 @@ const MovieDetail = () => {
 
   // state
   const loginUser = useAppStore((state) => state.currentUser);
+  const loginUserInfo = useAppStore(state => state.currentUserInfo)
   const addReview = useAppStore((state) => state.addReview);
   const [movie, setMovie] = useState(null);
+
+  const getReview = useAppStore((state) => state.getReview);
+
   const reviews = useAppStore((state) => state.reviews);
-  const movieReviews = reviews.filter((r) => String(r.movieId) === String(id));
+  const movieReviews = reviews;
   const [reviewContent, setReviewContent] = useState("");
   const [recommendIndex, setRecommendIndex] = useState(0);
 
@@ -35,6 +40,8 @@ const MovieDetail = () => {
   // 영화가 바뀌면 추천 인덱스 초기화
   useEffect(() => {
     setRecommendIndex(0);
+
+    getReview(id); //리뷰 불러오기
   }, [id]);
 
   // 화면에 사용할 데이터
@@ -62,11 +69,14 @@ const MovieDetail = () => {
       const newReview = {
         id: Date.now(),
         movieId: id,
-        writer: loginUser.id,
+        uid : loginUser.uid,
+        writer: loginUserInfo.name,
         content: reviewContent,
         rating: 1,
         createdAt: new Date().toLocaleDateString('ko-KR')
       };
+      //데이터베이스에 등록
+      addDBReview(newReview);
 
       addReview(newReview);
       setReviewContent("");

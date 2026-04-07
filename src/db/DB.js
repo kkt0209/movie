@@ -1,9 +1,8 @@
-// import { collection, addDoc, setDoc, doc, query, getDoc, getDocs, where } from "firebase/firestore";
-import { setDoc, doc, getDoc} from "firebase/firestore";
+import { addDoc, collection, doc, getDoc, getDocs, query, setDoc, where } from "firebase/firestore";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "./firebase";
 
-const handleSignup = async (user) => {
+const authSignup = async (user) => {
     try{
         await createUserWithEmailAndPassword(auth, user.email, user.pwd);
         const newUser = {
@@ -26,7 +25,7 @@ const handleSignup = async (user) => {
     }
 };
 
-const handleLogin = async (email, password) => {
+const authLogin = async (email, password) => {
     try{
         await signInWithEmailAndPassword(auth, email, password);
 
@@ -48,4 +47,27 @@ const readUserInfo = async() =>{
     return userSnapshot.data();
 }
 
-export {handleSignup, handleLogin , readUserInfo};
+const addDBReview = async(newReview) =>{
+    const reviewRef = collection(db, "reviews");
+
+    await addDoc(reviewRef , newReview);
+}
+
+const getDBReview = async(movieId) => {
+    movieId = String(movieId);
+    const q = query(
+        collection(db, "reviews"),
+        where("movieId", "==", movieId)
+    );
+
+    const reviewList = await getDocs(q);
+
+    const docItems = Array();
+
+    reviewList.docs.map(doc => docItems.push(doc.data()));
+
+    return docItems;
+}
+
+
+export { authLogin, authSignup, readUserInfo ,addDBReview , getDBReview};
