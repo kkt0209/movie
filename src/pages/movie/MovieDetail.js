@@ -7,7 +7,6 @@ import RecommendationSection from "components/movie/RecommendationSection";
 import GallerySection from "components/movie/GallerySection";
 
 import useAppStore from "store/useAppStore";
-import { addDBReview } from "db/DB";
 
 const MovieDetail = () => {
   // 기본값
@@ -28,8 +27,10 @@ const MovieDetail = () => {
   const movieReviews = useAppStore((state) => state.movieReviews);
   const [reviewContent, setReviewContent] = useState("");
 
-  const [reviewLiked, setReviewLiked] = useState(false);
+  // const [reviewLiked, setReviewLiked] = useState(false);
 
+  const reviewLiked = useAppStore((state) => state.reviewLiked);
+  const setReviewLiked = useAppStore((state) => state.setReviewLiked);
   
   // const [reviews, setReviews] = useState([]);
   // const [reviewTitle, setReviewTitle] = useState("");
@@ -105,12 +106,13 @@ const MovieDetail = () => {
   // 영화가 바뀌면 추천 인덱스 초기화
   useEffect( () => {
     setRecommendIndex(0);
-
+    
     // getDBReview(id); //리뷰 불러오기
     // setReviewTitle("");
     // setReviewText("");
     // setReviews([]);
-    setReviewLiked(checkDBReviewLike(loginUser?.uid, id)); //선택한 영화가 좋아요가 눌려있는지
+
+    checkDBReviewLike(loginUser.uid, id);
     getMovieReview(id); //리뷰 불러오기
   }, [id]);
 
@@ -233,9 +235,9 @@ const MovieDetail = () => {
           poster_path : movie.poster_path
         }
 
-      addReviewLiked(reviewLiked,liked, loginUser.uid, id);
+      addReviewLiked(reviewLiked, liked, loginUser.uid, id);
     }else{
-      alert('로그인 후에 작성해주세요.')
+      alert('로그인 후에 시도해주세요.')
       navigate('/login', {state:{from:location}});
     }
   }

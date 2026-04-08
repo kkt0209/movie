@@ -98,7 +98,6 @@ const dbApi = {
         const reviewList = await getDocs(q);
 
         return reviewList.docs.map(doc => doc.data());
-
     },
 
     getDBUserReview : async(uid) => {

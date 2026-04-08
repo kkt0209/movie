@@ -35,15 +35,6 @@ const defaultLists = [
              { movieId: "1171145", poster_path: '/77ggpowGO0ORQY9x33NeBIPajm1.jpg' }, ]},
 ];
 
-const defaultLikes = [
-  { uid: 'YwY5UFVvXkXcWWiZu83EoWfl1al1', movieId: "687163", poster_path: '/qqGpVVZk2KD1lAvccgTU4Z6nh1H.jpg' },
-  { uid: 'YwY5UFVvXkXcWWiZu83EoWfl1al1', movieId: "1226863", poster_path: '/knaXOBDBecVBWZVup3zXaOoy23v.jpg' },
-  { uid: 'YwY5UFVvXkXcWWiZu83EoWfl1al1', movieId: "1327819", poster_path: '/vJu9THzQ26Q5sWOVnhOkuRH5M1P.jpg' },
-  { uid: 'YwY5UFVvXkXcWWiZu83EoWfl1al1', movieId: "83533", poster_path: '/l18o0AK18KS118tWeROOKYkF0ng.jpg' },
-  { uid: 'YwY5UFVvXkXcWWiZu83EoWfl1al1', movieId: "1268127", poster_path: '/f7sCSLEPRfV2fWQ0RYOtHhnHXuG.jpg' },
-  { uid: 'YwY5UFVvXkXcWWiZu83EoWfl1al1', movieId: "1297842", poster_path: '/otP94vckeMXAgQxzhcRkZSeSmYv.jpg' },
-];
-
 const useAppStore = create((set) => ({
   currentUser: null,
   currentUserInfo: null,
@@ -52,13 +43,16 @@ const useAppStore = create((set) => ({
   films: defaultFilms,
   watchList: defaultWatchList,
   lists: defaultLists,
-  likes: defaultLikes,
+  likes: null,
+  reviewLiked: false,
 
   setCurrentUser: (loginUser) => set({ currentUser: loginUser }),
   setCurrentUserInfo: (loginUser) => set({ currentUserInfo: loginUser }),
 
   searchResults: [], // 검색 결과를 담을 배열
   setSearchResults: (results) => set({ searchResults: results }),
+
+  setReviewLiked: (value) => set({ reviewLiked: value }),
 
   initApp: () => {
     const auth = getAuth(); //파이어베이스가 초기화된 auth 객체
@@ -79,7 +73,7 @@ const useAppStore = create((set) => ({
         set({ 
           currentUser: null,
           currentUserInfo: null,
-          
+          reviewLiked : false
         });
         console.log("로그아웃 상태");
       }
@@ -119,7 +113,9 @@ const useAppStore = create((set) => ({
     await dbApi.addDBReviewLike(reviewLiked,liked,uid,movieId);
   },
   checkReviewLike : async (uid,movieId) => {
-    await dbApi.checkDBReviewLike(uid, movieId);
+    const result = await dbApi.checkDBReviewLike(uid, movieId);
+
+    set({ reviewLiked: result });
   },
 }));
 
