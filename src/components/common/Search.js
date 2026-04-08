@@ -6,6 +6,7 @@ import useAppStore from "store/useAppStore";
 
 
 const Search = ({ getGenreColor }) => {
+    const API_KEY = process.env.REACT_APP_TMDB_API_KEY;
     const [movie, setMovie] = useState(null);
     const [title, setTitle] = useState('');
     const [movieList, setMovieList] = useState([]);
@@ -17,16 +18,16 @@ const Search = ({ getGenreColor }) => {
     const SearchMovie = () => {
         if (!title.trim()) return alert("검색어를 입력하세요!");
         //'검색어' 포함된 데이터를 새로 요청
-        axios.get(`https://api.themoviedb.org/3/search/movie?api_key=f2c5d8cd2ecfdea28dfeb688d935b960&language=ko-KR&query=${title}`)
+        axios.get(`https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&language=ko-KR&query=${title}`)
             .then(res => {
                 const rawData = res.data.results;
                 const filteredList = rawData.filter((movie) => new Date(movie.release_date) <= new Date());
                 
                 setSearchResults(filteredList);
             })
-          .catch(err => {
-            console.log(err);
-        });
+            .catch(err => {
+                console.log(err);
+            });
         };
 
     return (

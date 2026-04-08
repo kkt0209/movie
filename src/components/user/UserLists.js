@@ -10,8 +10,8 @@ const UserLists = () => {
         <div style={{display:"flex"}}>
             {lists.map((list) => (
                 <div style={{border:'1px solid gray'}}>
-                    <div><strong>{list.name}</strong></div>
-                    <div>{list.description}</div>
+                    <div><strong>{list.title}</strong></div>
+                    <div>{list.desc}</div>
 
                     {list.lists.map((movie) => (
                         <Link to={`/movie/${movie.movieId}`} key={movie.movieId}>

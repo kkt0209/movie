@@ -9,7 +9,7 @@ const UserReviews = () => {
     
     useEffect(() => {
         getUserReview(loginUser?.uid); //리뷰 불러오기
-    }, [loginUser?.uid]);
+    }, [loginUser?.uid, getUserReview]);
 
     return (
         <div style={{display:"flex"}}>

@@ -5,7 +5,7 @@ import useAppStore from "store/useAppStore";
 const UserNavbar = () => {
     const loginUser = useAppStore((state)=>state.currentUser)
     return (
-        <ul>
+        <ul className="navbar">
             <li>{loginUser?.email}</li>
             <li><NavLink to={'profile'} style={({ isActive }) => ({
                 fontWeight: isActive ? "bold" : "normal",})}>Profile</NavLink></li>

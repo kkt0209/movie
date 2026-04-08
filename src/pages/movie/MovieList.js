@@ -13,10 +13,6 @@ const MovieList = () => {
   const query = searchParams.get('query');
   const category = searchParams.get("category") || "popular";
 
-  const handleClickCategory = (category) => {
-    navigate(`/movie?category=${category}`);
-  };
-
   useEffect(() => {
     axios
       .get(

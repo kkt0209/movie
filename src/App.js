@@ -22,6 +22,7 @@ import UserReviews from 'components/user/UserReviews';
 import UserWatchList from 'components/user/UserWatchList';
 import UserLists from 'components/user/UserLists';
 import UserLikes from 'components/user/UserLikes';
+import UserNewList from 'pages/user/UserNewList';
 
 function App() {
   const initApp = useAppStore((state) => state.initApp);
@@ -47,6 +48,7 @@ function App() {
           <Route path="lists" element={<UserLists/>}/>
           <Route path="likes" element={<UserLikes/>}/>
         </Route>
+        <Route path="/list/new/" element={<UserNewList/>}/>
         <Route path='/movie' element={<MovieList/>}/>
         <Route path='/movie/:id' element={<MovieDetail/>}/>
         <Route path="/movie/genre/:id" element={<MovieGenre/>}/>
