@@ -7,7 +7,6 @@ import RecommendationSection from "components/movie/RecommendationSection";
 import GallerySection from "components/movie/GallerySection";
 
 import useAppStore from "store/useAppStore";
-import { addDBReview, getDBReview } from "db/DB";
 import { addDBReview } from "db/DB";
 
 const MovieDetail = () => {
@@ -22,10 +21,14 @@ const MovieDetail = () => {
   const loginUserInfo = useAppStore(state => state.currentUserInfo)
   const addReview = useAppStore((state) => state.addReview);
   const getMovieReview = useAppStore((state) => state.getMovieReview);
+  const checkDBReviewLike = useAppStore((state) => state.checkReviewLike);
+  const addReviewLiked = useAppStore((state) => state.addReviewLike);
   const [movie, setMovie] = useState(null);
 
   const movieReviews = useAppStore((state) => state.movieReviews);
   const [reviewContent, setReviewContent] = useState("");
+
+  const [reviewLiked, setReviewLiked] = useState(false);
 
   
   // const [reviews, setReviews] = useState([]);
@@ -67,14 +70,14 @@ const MovieDetail = () => {
     }, [id, API_KEY]);
 
   // 영화가 바뀌면 추천 인덱스 초기화
-  useEffect(() => {
+  useEffect( () => {
     setRecommendIndex(0);
 
-    getReview(id); //리뷰 불러오기
+    // getDBReview(id); //리뷰 불러오기
     // setReviewTitle("");
     // setReviewText("");
     // setReviews([]);
-
+    setReviewLiked(checkDBReviewLike(loginUser?.uid, id)); //선택한 영화가 좋아요가 눌려있는지
     getMovieReview(id); //리뷰 불러오기
   }, [id]);
 
@@ -124,18 +127,14 @@ const MovieDetail = () => {
         id: Date.now(),
         uid : loginUser.uid,
         movieId: id,
-        uid : loginUser.uid,
         poster_path: movie.poster_path,
         writer: loginUserInfo.name,
         content: reviewContent,
         rating: 1,
         createdAt: new Date().toLocaleDateString('ko-KR')
       };
-      //데이터베이스에 등록
-      addDBReview(newReview);
 
       //데이터베이스에 등록
-      addDBReview(newReview);
       addReview(newReview);
       setReviewContent("");
     } else {
@@ -189,6 +188,24 @@ const MovieDetail = () => {
 
   const tmdbReviews = movie?.reviews?.results || [];
   console.log("tmdbReviews", tmdbReviews)
+
+  const reviewLikedCheck = () => { //좋아요 토글
+
+    if(loginUser){
+      setReviewLiked(prev => !prev);
+      
+        const liked = {
+          uid : loginUser.uid,
+          movieId : id,
+          poster_path : movie.poster_path
+        }
+
+      addReviewLiked(reviewLiked,liked, loginUser.uid, id);
+    }else{
+      alert('로그인 후에 작성해주세요.')
+      navigate('/login', {state:{from:location}});
+    }
+  }
   
   // 로딩 처리
   if (!movie) {
@@ -215,6 +232,8 @@ const MovieDetail = () => {
         onAddReview={handleAddReview}
         tmdbReviews={tmdbReviews}
         collection={collection}
+        liked = {reviewLiked}
+        onCheckLiked = {reviewLikedCheck}
         collectionMovies={collectionMovies}
       />
 

@@ -10,6 +10,7 @@ const ReviewSection = ({
   reviewContet,
   onChangeContent,
   onAddReview,
+  onCheckLiked, liked,
 }) => {
   return (
     <div className="review-section">
@@ -35,8 +36,8 @@ const ReviewSection = ({
           <button type="button" className="ui-button">
             ★ 별점
           </button>
-          <button type="button" className="ui-button">
-            👍 좋아요
+          <button type="button" className="ui-button" onClick={onCheckLiked}>
+            {liked ? "❤️ 좋아요 취소" : "🤍 좋아요"}
           </button>
           <button
             type="button"
