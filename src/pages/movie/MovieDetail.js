@@ -40,34 +40,67 @@ const MovieDetail = () => {
   const [releaseInfo, setReleaseInfo] = useState([]);
   const [collection, setCollection] = useState(null);
 
-  // 영화 상세 불러오기
   useEffect(() => {
-    axios.get(`https://api.themoviedb.org/3/movie/${id}?api_key=${API_KEY}&language=ko-KR&include_image_language=ko-KR,null&append_to_response=credits,recommendations,videos,images,reviews`)
-         .then((response) => {
-          setMovie(response.data);
-      })
-         .catch((error) => {
-          console.error("영화 상세 불러오기 실패", error);
+  let isMounted = true;
+
+  setMovie(null);
+  setProviders([]);
+  setReleaseInfo([]);
+  setCollection(null);
+  setRecommendIndex(0);
+  setReviewContent("");
+  window.scrollTo(0, 0);
+
+  axios
+    .get(
+      `https://api.themoviedb.org/3/movie/${id}?api_key=${API_KEY}&language=ko-KR&include_image_language=ko-KR,null&append_to_response=credits,recommendations,videos,images,reviews`
+    )
+    .then((response) => {
+      if (isMounted) {
+        setMovie(response.data);
+      }
+    })
+    .catch((error) => {
+      if (isMounted) {
+        console.error("영화 상세 불러오기 실패", error);
+      }
     });
 
-    axios.get(`https://api.themoviedb.org/3/movie/${id}/watch/providers?api_key=${API_KEY}`)
-         .then((response) => {
-          const kr = response.data.results?.KR;
-          setProviders(kr?.flatrate || []);
-      })
-         .catch((error) => {
-          console.error("OTT 정보 불러오기 실패", error);
+  axios
+    .get(
+      `https://api.themoviedb.org/3/movie/${id}/watch/providers?api_key=${API_KEY}`
+    )
+    .then((response) => {
+      if (isMounted) {
+        const kr = response.data.results?.KR;
+        setProviders(kr?.flatrate || []);
+      }
+    })
+    .catch((error) => {
+      if (isMounted) {
+        console.error("OTT 정보 불러오기 실패", error);
+      }
     });
 
-    axios.get(`https://api.themoviedb.org/3/movie/${id}/release_dates?api_key=${API_KEY}`)
-          .then((response) => {
-          console.log("release_dates", response.data.results);
-          setReleaseInfo(response.data.results || []);
-        })
-          .catch((error) => {
-          console.error("개봉정보 불러오기 실패", error);
-      });
-    }, [id, API_KEY]);
+  axios
+    .get(
+      `https://api.themoviedb.org/3/movie/${id}/release_dates?api_key=${API_KEY}`
+    )
+    .then((response) => {
+      if (isMounted) {
+        setReleaseInfo(response.data.results || []);
+      }
+    })
+    .catch((error) => {
+      if (isMounted) {
+        console.error("개봉정보 불러오기 실패", error);
+      }
+    });
+
+  return () => {
+    isMounted = false;
+  };
+}, [id, API_KEY]);
 
   // 영화가 바뀌면 추천 인덱스 초기화
   useEffect( () => {
