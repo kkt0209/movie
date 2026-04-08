@@ -22,8 +22,8 @@ const defaultWatchList = [
 
 const defaultLists = [
   { uid: 'YwY5UFVvXkXcWWiZu83EoWfl1al1', 
-    name : '재밌는 영화',
-    description : '올해 최고로 재밌는 영화',
+    title : '재밌는 영화',
+    desc : '올해 최고로 재밌는 영화',
     lists: [ { movieId: "1268127", poster_path: '/f7sCSLEPRfV2fWQ0RYOtHhnHXuG.jpg' },
              { movieId: "1297842", poster_path: '/otP94vckeMXAgQxzhcRkZSeSmYv.jpg' },
              { movieId: "1327819", poster_path: '/vJu9THzQ26Q5sWOVnhOkuRH5M1P.jpg' }, ]},

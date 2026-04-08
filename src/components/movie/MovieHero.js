@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import ReviewSection from "components/movie/ReviewSection";
 import TmdbReviewSection from "components/movie/TmdbReviewSection";
 import CollectionSection from "components/movie/CollectionSection";
+import React from "react";
 
 const MovieHero = ({
   movie,
@@ -9,13 +10,8 @@ const MovieHero = ({
   providers,
   certification,
   releaseDate,
-  // reviewTitle,
-  // reviewText,
-  // reviews,
   movieReviews,
   reviewContent,
-  // onChangeTitle,
-  // onChangeText,
   onChangeContent,
   onAddReview,
   tmdbReviews,
@@ -28,6 +24,7 @@ const MovieHero = ({
 
   return (
     <div className="hero">
+      {/* 배경 레이어 */}
       <div
         className="hero-bg"
         style={{
@@ -38,7 +35,10 @@ const MovieHero = ({
       <div className="hero-vignette"></div>
 
       <div className="hero-content">
+        {/* hero-main이 Sticky의 부모 범위가 됩니다 */}
         <div className="hero-main">
+          
+          {/* 왼쪽 컬럼: 스크롤을 따라 움직이는 영역 */}
           <div className="hero-left-column">
             <div className="poster-box">
               <img
@@ -68,6 +68,7 @@ const MovieHero = ({
             />
           </div>
 
+          {/* 중앙/오른쪽 정보 영역: 내용이 길어지는 부분 */}
           <div className="info-box">
             <h1>{movie.title}</h1>
             <p className="movie-year">{movie.release_date?.slice(0, 4)}</p>
@@ -165,13 +166,9 @@ const MovieHero = ({
             </div>
           </div>
 
+          {/* 리뷰 영역: info-box 아래 혹은 옆에 위치 */}
           <div className="hero-review-panel">
             <ReviewSection
-              // reviewTitle={reviewTitle}
-              // reviewText={reviewText}
-              // reviews={reviews}
-              // onChangeTitle={onChangeTitle}
-              // onChangeText={onChangeText}
               movieReviews={movieReviews}
               reviewContent={reviewContent}
               onChangeContent={onChangeContent}
