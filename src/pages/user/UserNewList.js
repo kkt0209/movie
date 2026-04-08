@@ -1,18 +1,22 @@
 import axios from "axios";
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import useAppStore from "store/useAppStore";
 import 'styles/pages/UserNewList.css';
 
 const UserNewList = () => {
     const API_KEY = process.env.REACT_APP_TMDB_API_KEY;
-    
+    const navigate = useNavigate();
+
+    const loginUser = useAppStore((state) => state.currentUser);
+    const addList = useAppStore((state) => (state.addList));
     const [searchTitle, setSearchTitle] = useState("");
     const [movies, setMovies] = useState([]);
-    const [list, setList] = useState([]);
+    const [userLists, setUserLists] = useState([]);
     const [title, setTitle] = useState('');
     const [desc, setDesc] = useState('');
 
     const searchMovies = async (query) => {
-        const trimmedQuery = query.trim();
         if (!query.trim()) {
             setMovies([]);
             return;
@@ -20,7 +24,7 @@ const UserNewList = () => {
 
         try {
             const response = await axios.get(
-            `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&language=ko-KR&query=${trimmedQuery}`
+            `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&language=ko-KR&query=${query}`
             );
             setMovies(response.data.results || []);
         } catch (error) {
@@ -35,18 +39,31 @@ const UserNewList = () => {
     };
 
     const handleResultClick = (movie) => {
-        const foundResult = list.find((m) => m.movieId === movie.id);
+        const foundResult = userLists.find((m) => m.movieId === movie.id);
 
         if (foundResult) return;
-        setList([...list, {movieId: movie.id, poster_path: movie.poster_path}])
+        setUserLists([...userLists, {movieId: movie.id, poster_path: movie.poster_path}])
     };
 
-    const submit = (e) => {
+    const handleAddList = (e) => {
         e.preventDefault();
+        if (loginUser) {
+            if (!title.trim() || !desc.trim()) return;
+
+            const newList = {
+                uid: loginUser.uid,
+                title: title,
+                desc: desc,
+                lists: userLists,
+            }
+
+            addList(newList);
+            navigate('/user/'+loginUser.uid+'/lists')
+        };
     }
 
     return (
-        <form onSubmit={submit}>
+        <form onSubmit={handleAddList}>
             <h2>New List</h2>
             <hr/>
             <div>제목</div>
@@ -57,8 +74,8 @@ const UserNewList = () => {
 
             <div>영화 리스트</div>
             <div>
-                {list && 
-                    list.map((movie) => (
+                {userLists && 
+                    userLists.map((movie) => (
                         <img src={`https://image.tmdb.org/t/p/w45${movie.poster_path}`}/>
                     ))}
             </div>

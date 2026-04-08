@@ -7,23 +7,26 @@ const UserLists = () => {
     const lists = useAppStore((state) => state.lists).filter((list)=>(list?.uid === loginUser?.uid));
     
     return (
-        <div style={{display:"flex"}}>
-            {lists.map((list) => (
-                <div style={{border:'1px solid gray'}}>
-                    <div><strong>{list.title}</strong></div>
-                    <div>{list.desc}</div>
+        <>
+            <div><Link to='/list/new'><button>리스트 작성</button></Link></div>
+            <div style={{display:"flex"}}>
+                {lists.map((list) => (
+                    <div style={{border:'1px solid gray'}}>
+                        <div><strong>{list.title}</strong></div>
+                        <div>{list.desc}</div>
 
-                    {list.lists.map((movie) => (
-                        <Link to={`/movie/${movie.movieId}`} key={movie.movieId}>
-                            <img
-                                src={`https://image.tmdb.org/t/p/w200${movie.poster_path}`}
-                                alt={movie.title}
-                            />
-                        </Link>
-                    ))}
-                </div>
-            ))}
-        </div>
+                        {list.lists.map((movie) => (
+                            <Link to={`/movie/${movie.movieId}`} key={movie.movieId}>
+                                <img
+                                    src={`https://image.tmdb.org/t/p/w200${movie.poster_path}`}
+                                    alt={movie.title}
+                                />
+                            </Link>
+                        ))}
+                    </div>
+                ))}
+            </div>
+        </>
     )
 }
 

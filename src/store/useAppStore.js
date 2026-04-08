@@ -121,6 +121,11 @@ const useAppStore = create((set) => ({
   checkReviewLike : async (uid,movieId) => {
     await dbApi.checkDBReviewLike(uid, movieId);
   },
+  addList: (list) =>{
+    // dbApi.addDBList(list);
+    set((state) => ({
+      lists: [...state.lists, list],
+  }))},
 }));
 
 export default useAppStore;
