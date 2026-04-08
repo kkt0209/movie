@@ -116,6 +116,12 @@ const dbApi = {
 
         return docItems;
     },
+
+    addDBList : async(newList) =>{
+        const listRef = collection(db, "lists");
+
+        await addDoc(listRef , newList);
+    },
 }
 
 export default dbApi;
