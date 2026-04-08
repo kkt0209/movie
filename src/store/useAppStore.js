@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
-import { authLogin, getDBMovieReview, getDBUserReview, readUserInfo } from "db/DB";
+import dbApi from "db/DB";
 
 const defaultFilms = [
   { uid: 'YwY5UFVvXkXcWWiZu83EoWfl1al1', movieId: "687163", poster_path: '/qqGpVVZk2KD1lAvccgTU4Z6nh1H.jpg' },
@@ -66,16 +66,20 @@ const useAppStore = create((set) => ({
     // onAuthStateChanged는 인증 상태가 변경될 때마다 실행되는 콜백 함수를 등록함
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) =>{
       if(currentUser){ // 로그인이 되었을 때
-        const currentUserInfo = await readUserInfo();
+        const currentUserInfo = await dbApi.readUserInfo();
+        const likeLists = await dbApi.getReviewLikes(currentUser.uid);
+        
         set({ 
           currentUser: currentUser,
           currentUserInfo: currentUserInfo,
+          likes : likeLists //MyPage -> likes 페이지 좋아요 목록 설정
         });
         console.log("로그인된 유저 : ", currentUser.uid);
       }else { //로그아웃 되었을 때
         set({ 
           currentUser: null,
           currentUserInfo: null,
+          
         });
         console.log("로그아웃 상태");
       }
@@ -85,30 +89,37 @@ const useAppStore = create((set) => ({
     return () => unsubscribe();
   },
   login: (email, pwd) => {
-    authLogin(email, pwd);
+    dbApi.authLogin(email, pwd);
     return 1;
   },
   logout: () => {
     const auth = getAuth();
     signOut(auth);
   },
-  addReview: (movieReviews) =>
+  addReview: (movieReviews) =>{
+    dbApi.addDBReview(movieReviews);
     set((state) => ({
       movieReviews: [...state.movieReviews, movieReviews],
-  })),
+  }))},
   getMovieReview : async(movieId) => {
-    const movieReviews = await getDBMovieReview(movieId);
+    const movieReviews = await dbApi.getDBMovieReview(movieId);
 
     set(() => ({
       movieReviews: movieReviews,
     }))
   },
   getUserReview : async(uid) => {
-    const userReviews = await getDBUserReview(uid);
+    const userReviews = await dbApi.getDBUserReview(uid);
 
     set(() => ({
       userReviews: userReviews,
     }))
+  },
+  addReviewLike : async(reviewLiked,liked,uid,movieId) => {
+    await dbApi.addDBReviewLike(reviewLiked,liked,uid,movieId);
+  },
+  checkReviewLike : async (uid,movieId) => {
+    await dbApi.checkDBReviewLike(uid, movieId);
   },
 }));
 

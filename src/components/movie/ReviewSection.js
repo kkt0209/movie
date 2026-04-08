@@ -5,6 +5,7 @@ const ReviewSection = ({
   reviewContent,
   onChangeContent,
   onAddReview,
+  onCheckLiked, liked,
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -42,6 +43,12 @@ const ReviewSection = ({
         ></textarea>
 
         <div className="review-actions">
+          <button type="button" className="ui-button">
+            ★ 별점
+          </button>
+          <button type="button" className="ui-button" onClick={onCheckLiked}>
+            {liked ? "❤️ 좋아요 취소" : "🤍 좋아요"}
+          </button>
           <button
             type="button"
             className="submit-button"
