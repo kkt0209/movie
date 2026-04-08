@@ -1,0 +1,35 @@
+.user-profile-card {
+  max-width: 640px;
+  padding: 24px 26px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.user-page-title {
+  margin: 0 0 30px;
+}
+
+.user-profile-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.user-profile-row:last-child {
+  border-bottom: none;
+}
+
+.user-profile-label {
+  color: #93a1ad;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.user-profile-value {
+  color: white;
+  text-align: right;
+  word-break: break-word;
+}

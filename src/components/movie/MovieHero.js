@@ -17,6 +17,7 @@ const MovieHero = ({
   tmdbReviews,
   collection,
   collectionMovies,
+  onCheckLiked, liked,
 }) => {
   const directors =
     movie.credits?.crew?.filter((person) => person.job === "Director") || [];
@@ -172,6 +173,8 @@ const MovieHero = ({
               reviewContent={reviewContent}
               onChangeContent={onChangeContent}
               onAddReview={onAddReview}
+              liked = {liked}
+              onCheckLiked = {onCheckLiked}
             />
 
             <TmdbReviewSection tmdbReviews={tmdbReviews} />

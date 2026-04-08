@@ -21,11 +21,16 @@ const MovieDetail = () => {
   const loginUserInfo = useAppStore(state => state.currentUserInfo)
   const addReview = useAppStore((state) => state.addReview);
   const getMovieReview = useAppStore((state) => state.getMovieReview);
+  const checkDBReviewLike = useAppStore((state) => state.checkReviewLike);
+  const addReviewLiked = useAppStore((state) => state.addReviewLike);
   const [movie, setMovie] = useState(null);
 
   const movieReviews = useAppStore((state) => state.movieReviews);
   const [reviewContent, setReviewContent] = useState("");
 
+  const [reviewLiked, setReviewLiked] = useState(false);
+
+  
   // const [reviews, setReviews] = useState([]);
   // const [reviewTitle, setReviewTitle] = useState("");
   // const [reviewText, setReviewText] = useState("");
@@ -35,43 +40,77 @@ const MovieDetail = () => {
   const [releaseInfo, setReleaseInfo] = useState([]);
   const [collection, setCollection] = useState(null);
 
-  // 영화 상세 불러오기
   useEffect(() => {
-    axios.get(`https://api.themoviedb.org/3/movie/${id}?api_key=${API_KEY}&language=ko-KR&include_image_language=ko-KR,null&append_to_response=credits,recommendations,videos,images,reviews`)
-         .then((response) => {
-          setMovie(response.data);
-      })
-         .catch((error) => {
-          console.error("영화 상세 불러오기 실패", error);
+  let isMounted = true;
+
+  setMovie(null);
+  setProviders([]);
+  setReleaseInfo([]);
+  setCollection(null);
+  setRecommendIndex(0);
+  setReviewContent("");
+  window.scrollTo(0, 0);
+
+  axios
+    .get(
+      `https://api.themoviedb.org/3/movie/${id}?api_key=${API_KEY}&language=ko-KR&include_image_language=ko-KR,null&append_to_response=credits,recommendations,videos,images,reviews`
+    )
+    .then((response) => {
+      if (isMounted) {
+        setMovie(response.data);
+      }
+    })
+    .catch((error) => {
+      if (isMounted) {
+        console.error("영화 상세 불러오기 실패", error);
+      }
     });
 
-    axios.get(`https://api.themoviedb.org/3/movie/${id}/watch/providers?api_key=${API_KEY}`)
-         .then((response) => {
-          const kr = response.data.results?.KR;
-          setProviders(kr?.flatrate || []);
-      })
-         .catch((error) => {
-          console.error("OTT 정보 불러오기 실패", error);
+  axios
+    .get(
+      `https://api.themoviedb.org/3/movie/${id}/watch/providers?api_key=${API_KEY}`
+    )
+    .then((response) => {
+      if (isMounted) {
+        const kr = response.data.results?.KR;
+        setProviders(kr?.flatrate || []);
+      }
+    })
+    .catch((error) => {
+      if (isMounted) {
+        console.error("OTT 정보 불러오기 실패", error);
+      }
     });
 
-    axios.get(`https://api.themoviedb.org/3/movie/${id}/release_dates?api_key=${API_KEY}`)
-          .then((response) => {
-          console.log("release_dates", response.data.results);
-          setReleaseInfo(response.data.results || []);
-        })
-          .catch((error) => {
-          console.error("개봉정보 불러오기 실패", error);
-      });
-    }, [id, API_KEY]);
+  axios
+    .get(
+      `https://api.themoviedb.org/3/movie/${id}/release_dates?api_key=${API_KEY}`
+    )
+    .then((response) => {
+      if (isMounted) {
+        setReleaseInfo(response.data.results || []);
+      }
+    })
+    .catch((error) => {
+      if (isMounted) {
+        console.error("개봉정보 불러오기 실패", error);
+      }
+    });
+
+  return () => {
+    isMounted = false;
+  };
+}, [id, API_KEY]);
 
   // 영화가 바뀌면 추천 인덱스 초기화
-  useEffect(() => {
+  useEffect( () => {
     setRecommendIndex(0);
 
+    // getDBReview(id); //리뷰 불러오기
     // setReviewTitle("");
     // setReviewText("");
     // setReviews([]);
-
+    setReviewLiked(checkDBReviewLike(loginUser?.uid, id)); //선택한 영화가 좋아요가 눌려있는지
     getMovieReview(id); //리뷰 불러오기
   }, [id]);
 
@@ -129,7 +168,6 @@ const MovieDetail = () => {
       };
 
       //데이터베이스에 등록
-      addDBReview(newReview);
       addReview(newReview);
       setReviewContent("");
     } else {
@@ -183,6 +221,24 @@ const MovieDetail = () => {
 
   const tmdbReviews = movie?.reviews?.results || [];
   console.log("tmdbReviews", tmdbReviews)
+
+  const reviewLikedCheck = () => { //좋아요 토글
+
+    if(loginUser){
+      setReviewLiked(prev => !prev);
+      
+        const liked = {
+          uid : loginUser.uid,
+          movieId : id,
+          poster_path : movie.poster_path
+        }
+
+      addReviewLiked(reviewLiked,liked, loginUser.uid, id);
+    }else{
+      alert('로그인 후에 작성해주세요.')
+      navigate('/login', {state:{from:location}});
+    }
+  }
   
   // 로딩 처리
   if (!movie) {
@@ -209,6 +265,8 @@ const MovieDetail = () => {
         onAddReview={handleAddReview}
         tmdbReviews={tmdbReviews}
         collection={collection}
+        liked = {reviewLiked}
+        onCheckLiked = {reviewLikedCheck}
         collectionMovies={collectionMovies}
       />
 

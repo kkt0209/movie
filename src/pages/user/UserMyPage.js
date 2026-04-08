@@ -1,29 +1,31 @@
 import { Outlet, useLocation } from "react-router-dom";
 import React from "react";
-
 import UserNavbar from "components/user/UserNavBar";
+import "./UserMyPage.css";
 
 const UserMyPage = () => {
+  const location = useLocation();
 
-    const location = useLocation();
+  const getTitle = () => {
+    if (location.pathname.includes("/profile")) return "Profile";
+    if (location.pathname.includes("/films")) return "Films";
+    if (location.pathname.includes("/reviews")) return "Reviews";
+    if (location.pathname.includes("/watchlist")) return "WatchList";
+    if (location.pathname.includes("/lists")) return "Lists";
+    if (location.pathname.includes("/likes")) return "Likes";
+    return "User Page";
+  };
 
-    const getTitle = () => {
-        if (location.pathname.includes("/profile")) return "Profile";
-        if (location.pathname.includes("/films")) return "Films";
-        if (location.pathname.includes("/reviews")) return "Reviews";
-        if (location.pathname.includes("/watchlist")) return "WatchList";
-        if (location.pathname.includes("/lists")) return "Lists";
-        if (location.pathname.includes("/likes")) return "Likes";
-        return "User Page";
-    };
+  return (
+    <div className="user-page">
+      <UserNavbar />
 
-    return (
-        <div>
-            <UserNavbar />
-            <h2>{getTitle()}</h2>
-            <Outlet />
-        </div>
-    )
-}
+      <div className="user-page-content">
+        <h2 className="user-page-title">{getTitle()}</h2>
+        <Outlet />
+      </div>
+    </div>
+  );
+};
 
 export default UserMyPage;

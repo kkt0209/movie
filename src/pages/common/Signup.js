@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { authSignup } from "db/DB";
+import dbApi from "db/DB";
 
 const Signup = () => {
     const navigate = useNavigate();
@@ -21,7 +21,7 @@ const Signup = () => {
                 birth:birth, phone:phone
             }
 
-            authSignup(newUser);
+            dbApi.authSignup(newUser);
             navigate('/login');
         }
     }
