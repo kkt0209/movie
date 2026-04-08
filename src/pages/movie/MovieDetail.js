@@ -1,10 +1,14 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import MovieHero from "components/movie/MovieHero";
+import RecommendationSection from "components/movie/RecommendationSection";
+import GallerySection from "components/movie/GallerySection";
+
 import useAppStore from "store/useAppStore";
 import { addDBReview, getDBReview } from "db/DB";
+import { addDBReview } from "db/DB";
 
 const MovieDetail = () => {
   // 기본값
@@ -17,31 +21,61 @@ const MovieDetail = () => {
   const loginUser = useAppStore((state) => state.currentUser);
   const loginUserInfo = useAppStore(state => state.currentUserInfo)
   const addReview = useAppStore((state) => state.addReview);
+  const getMovieReview = useAppStore((state) => state.getMovieReview);
   const [movie, setMovie] = useState(null);
 
-  const getReview = useAppStore((state) => state.getReview);
-
-  const reviews = useAppStore((state) => state.reviews);
-  const movieReviews = reviews;
+  const movieReviews = useAppStore((state) => state.movieReviews);
   const [reviewContent, setReviewContent] = useState("");
+
+  
+  // const [reviews, setReviews] = useState([]);
+  // const [reviewTitle, setReviewTitle] = useState("");
+  // const [reviewText, setReviewText] = useState("");
+
   const [recommendIndex, setRecommendIndex] = useState(0);
+  const [providers, setProviders] = useState([]);
+  const [releaseInfo, setReleaseInfo] = useState([]);
+  const [collection, setCollection] = useState(null);
 
   // 영화 상세 불러오기
   useEffect(() => {
-    axios.get(`https://api.themoviedb.org/3/movie/${id}?api_key=${API_KEY}&language=ko-KR&include_image_language=ko-KR,null&append_to_response=credits,recommendations,videos,images`)
+    axios.get(`https://api.themoviedb.org/3/movie/${id}?api_key=${API_KEY}&language=ko-KR&include_image_language=ko-KR,null&append_to_response=credits,recommendations,videos,images,reviews`)
          .then((response) => {
-         setMovie(response.data);
+          setMovie(response.data);
       })
          .catch((error) => {
-         console.error("영화 상세 불러오기 실패", error);
+          console.error("영화 상세 불러오기 실패", error);
+    });
+
+    axios.get(`https://api.themoviedb.org/3/movie/${id}/watch/providers?api_key=${API_KEY}`)
+         .then((response) => {
+          const kr = response.data.results?.KR;
+          setProviders(kr?.flatrate || []);
+      })
+         .catch((error) => {
+          console.error("OTT 정보 불러오기 실패", error);
+    });
+
+    axios.get(`https://api.themoviedb.org/3/movie/${id}/release_dates?api_key=${API_KEY}`)
+          .then((response) => {
+          console.log("release_dates", response.data.results);
+          setReleaseInfo(response.data.results || []);
+        })
+          .catch((error) => {
+          console.error("개봉정보 불러오기 실패", error);
       });
-  }, [id, API_KEY]);
+    }, [id, API_KEY]);
 
   // 영화가 바뀌면 추천 인덱스 초기화
   useEffect(() => {
     setRecommendIndex(0);
 
     getReview(id); //리뷰 불러오기
+    // setReviewTitle("");
+    // setReviewText("");
+    // setReviews([]);
+
+    getMovieReview(id); //리뷰 불러오기
   }, [id]);
 
   // 화면에 사용할 데이터
@@ -49,16 +83,36 @@ const MovieDetail = () => {
     (video) => video.site === "YouTube" && video.type === "Trailer"
   );
 
+  const collectionId = movie?.belongs_to_collection?.id;
+
+  useEffect(() => {
+    if (!collectionId) {
+      setCollection(null);
+      return;
+    }
+
+    axios.get(`https://api.themoviedb.org/3/collection/${collectionId}?api_key=${API_KEY}&language=ko-KR`)
+          .then((response) => {
+            console.log("collection", response.data);
+            setCollection(response.data);
+        })
+          .catch((error) => {
+            console.error("컬렉션 정보 불러오기 실패", error);
+        });
+  }, [collectionId, API_KEY]);
+
   const recommendations = movie?.recommendations?.results || [];
+
+  const collectionMovies = collection?.parts || [];
+  console.log("collectionMovies", collectionMovies);
+
   const visibleCount = 8;
   const maxIndex = Math.max(0, recommendations.length - visibleCount);
 
   const galleryImages =
-  movie?.images?.backdrops?.length > 0
-    ? movie.images.backdrops.slice(0, 6)
-    : movie?.images?.posters?.slice(0, 6) || [];
-
-  
+    movie?.images?.backdrops?.length > 0
+      ? movie.images.backdrops.slice(0, 6)
+      : movie?.images?.posters?.slice(0, 6) || [];
 
   // 이벤트 함수
   const handleAddReview = (e) => {
@@ -68,8 +122,10 @@ const MovieDetail = () => {
 
       const newReview = {
         id: Date.now(),
+        uid : loginUser.uid,
         movieId: id,
         uid : loginUser.uid,
+        poster_path: movie.poster_path,
         writer: loginUserInfo.name,
         content: reviewContent,
         rating: 1,
@@ -78,6 +134,8 @@ const MovieDetail = () => {
       //데이터베이스에 등록
       addDBReview(newReview);
 
+      //데이터베이스에 등록
+      addDBReview(newReview);
       addReview(newReview);
       setReviewContent("");
     } else {
@@ -94,6 +152,44 @@ const MovieDetail = () => {
     setRecommendIndex((prev) => Math.min(prev + 1, maxIndex));
   };
 
+  const krRelease = releaseInfo.find((item) => item.iso_3166_1 === "KR");
+
+  console.log("KR release", krRelease);
+  console.log("KR release_dates", krRelease?.release_dates);
+
+  const krReleaseDates = krRelease?.release_dates || [];
+
+  const certificationItem = krReleaseDates.find(
+    (item) => item.certification && item.certification.trim() !== ""
+  );
+
+  const certification = certificationItem?.certification || "정보 없음";
+
+  let certificationLabel = "정보 없음";
+
+  if (certification === "All") {
+    certificationLabel = "전체관람가";
+  } else if (certification === "12") {
+    certificationLabel = "12세 이상 관람가";
+  } else if (certification === "15") {
+    certificationLabel = "15세 이상 관람가";
+  } else if (certification === "18" || certification === "19") {
+    certificationLabel = "청소년 관람불가";
+  } else if (certification && certification !== "정보 없음") {
+    certificationLabel = certification;
+  }
+
+  const releaseDateItem = krReleaseDates.find((item) => item.release_date);
+
+  const releaseDate =
+  releaseDateItem?.release_date?.slice(0, 10).replaceAll("-", ".") || "정보 없음";
+
+  console.log("certification", certification);
+  console.log("releaseDate", releaseDate);
+
+  const tmdbReviews = movie?.reviews?.results || [];
+  console.log("tmdbReviews", tmdbReviews)
+  
   // 로딩 처리
   if (!movie) {
     return <div>로딩중...</div>;
@@ -102,121 +198,42 @@ const MovieDetail = () => {
   // 화면 출력
   return (
     <>
-      <MovieHero movie={movie} trailer={trailer} />
+      <MovieHero 
+        movie={movie} 
+        trailer={trailer} 
+        providers={providers} 
+        certification={certificationLabel} 
+        releaseDate={releaseDate}
+        // reviewTitle={reviewTitle}
+        // reviewText={reviewText}
+        // reviews={reviews}
+        movieReviews={movieReviews}
+        reviewContent={reviewContent}
+        // onChangeTitle={(e) => setReviewTitle(e.target.value)}
+        // onChangeText={(e) => setReviewText(e.target.value)}
+        onChangeContent={(e) => setReviewContent(e.target.value)}
+        onAddReview={handleAddReview}
+        tmdbReviews={tmdbReviews}
+        collection={collection}
+        collectionMovies={collectionMovies}
+      />
 
       <div className="detail-bottom">
         <div className="detail-bottom-inner">
-          <div className="gallery-section">
-            <h3 className="gallery-title">이미지 갤러리</h3>
+          <GallerySection
+            galleryImages={galleryImages}
+            movieTitle={movie.title}
+            
+          />
 
-            <div className="gallery-grid">
-              {galleryImages.length > 0 ? (
-                galleryImages.map((image, index) => (
-                  <div className="gallery-item" key={image.file_path || index}>
-                    <img
-                      src={`https://image.tmdb.org/t/p/w780${image.file_path}`}
-                      alt={`${movie.title} 스틸컷 ${index + 1}`}
-                    />
-                  </div>
-                ))
-              ) : (
-                <p className="gallery-empty">표시할 이미지가 없습니다.</p>
-              )}
-            </div>
-          </div>
-
-          <div className="recommend-section">
-            <div className="recommend-header">
-              <h3>추천 영화</h3>
-
-              <div className="recommend-buttons">
-                <button
-                  type="button"
-                  className="recommend-nav-button"
-                  onClick={handlePrevRecommend}
-                  disabled={recommendIndex === 0}
-                >
-                  이전
-                </button>
-
-                <button
-                  type="button"
-                  className="recommend-nav-button"
-                  onClick={handleNextRecommend}
-                  disabled={recommendIndex >= maxIndex}
-                >
-                  다음
-                </button>
-              </div>
-            </div>
-
-            <div className="recommend-list">
-              {recommendations
-                .slice(recommendIndex, recommendIndex + visibleCount)
-                .map((item) => (
-                  <Link
-                    to={`/movie/${item.id}`}
-                    key={item.id}
-                    className="recommend-item"
-                  >
-                    <img
-                      src={
-                        item.poster_path
-                          ? `https://image.tmdb.org/t/p/w200${item.poster_path}`
-                          : "https://via.placeholder.com/200x300?text=No+Image"
-                      }
-                      alt={item.title}
-                    />
-                  </Link>
-                ))}
-            </div>
-          </div>
-
-          <div className="review-section">
-            <h3 className="review-title">리뷰</h3>
-            <div className="review-list">
-              {movieReviews.length > 0 ? (
-                movieReviews.map((review) => (
-                  <div className="review-card" key={review.id}>
-                    <h4>{review.writer} 평점: {review.rating} 작성일: {review.createdAt}</h4>
-                    <p>{review.content}</p>
-                  </div>
-                ))
-              ) : (
-                <p className="empty-review">등록된 리뷰가 아직 없습니다.</p>
-              )}
-            </div>
-
-            <form onSubmit={handleAddReview} className="review-form">
-              {/* <input
-                type="text"
-                placeholder="리뷰 제목"
-                value={reviewTitle}
-                onChange={(e) => setReviewTitle(e.target.value)}
-                className="review-input"
-              /> */}
-
-              <textarea
-                value={reviewContent}
-                onChange={(e) => setReviewContent(e.target.value)}
-                className="review-textarea"
-                placeholder={loginUser ? "리뷰를 입력하세요" : "로그인 후 리뷰를 입력하세요"}
-                readOnly={!loginUser}
-              ></textarea>
-
-              <div className="review-actions">
-                <button type="button" className="ui-button">
-                  ★ 별점
-                </button>
-                <button type="button" className="ui-button">
-                  👍 좋아요
-                </button>
-                <button type="submit" className="submit-button">
-                  등록
-                </button>
-              </div>
-            </form>
-          </div>
+          <RecommendationSection
+            recommendations={recommendations}
+            recommendIndex={recommendIndex}
+            visibleCount={visibleCount}
+            maxIndex={maxIndex}
+            onPrev={handlePrevRecommend}
+            onNext={handleNextRecommend}
+          />
         </div>
       </div>
     </>
