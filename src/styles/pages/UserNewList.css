@@ -6,7 +6,7 @@
 
 .movie-search-results {
     width: 500px;
-    max-height: 420px;
+    max-height: 300px;
     overflow-y: auto;
     padding: 0;
     margin: 0;

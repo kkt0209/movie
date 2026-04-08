@@ -4,9 +4,10 @@ import 'styles/pages/UserNewList.css';
 
 const UserNewList = () => {
     const API_KEY = process.env.REACT_APP_TMDB_API_KEY;
+    
     const [searchTitle, setSearchTitle] = useState("");
     const [movies, setMovies] = useState([]);
-    const [list, setList] = useState([])
+    const [list, setList] = useState([]);
     const [title, setTitle] = useState('');
     const [desc, setDesc] = useState('');
 
@@ -33,34 +34,36 @@ const UserNewList = () => {
         searchMovies(value);
     };
 
+    const handleResultClick = (movie) => {
+        const foundResult = list.find((m) => m.movieId === movie.id);
+
+        if (foundResult) return;
+        setList([...list, {movieId: movie.id, poster_path: movie.poster_path}])
+    };
+
+    const submit = (e) => {
+        e.preventDefault();
+    }
+
     return (
-        <div>
+        <form onSubmit={submit}>
             <h2>New List</h2>
             <hr/>
             <div>제목</div>
-            <input value={title} onClick={(e)=>setTitle(e.target.value)}/>
+            <input value={title} onChange={(e)=>setTitle(e.target.value)}/>
 
             <div>설명</div>
-            <textarea value={desc} onClick={(e)=>setDesc(e.target.value)}/>
+            <textarea value={desc} onChange={(e)=>setDesc(e.target.value)}/>
 
             <div>영화 리스트</div>
-            <ul>
+            <div>
                 {list && 
-                    list.map((movie) => {
-                        <div>
-                            <img
-                                className="movie-search-poster"
-                                src={`https://image.tmdb.org/t/p/w45${movie.poster_path}`}/>
-                            <div className="movie-search-meta">
-                                <div>{movie.title}</div>
-                                <div>{movie.original_title}</div>
-                                <div>{movie.release_date}</div>
-                            </div>
-                        </div>
-                    })}
-            </ul>
+                    list.map((movie) => (
+                        <img src={`https://image.tmdb.org/t/p/w45${movie.poster_path}`}/>
+                    ))}
+            </div>
 
-            <div>영화 추가</div>
+            <div>영화 검색</div>
             <input
                 className="movie-search-input"
                 value={searchTitle}
@@ -72,7 +75,7 @@ const UserNewList = () => {
                 {movies.map((movie) => 
                     movie.poster_path && (
                     <li key={movie.id} className="movie-search-item"
-                        onClick={()=>setList([...list, {movieId:movie.id, poster_path:movie.poster_path}])}>
+                        onClick={() => handleResultClick(movie)}>
                         <div className="movie-search-item-content">
                             <img
                                 className="movie-search-poster"
@@ -87,7 +90,9 @@ const UserNewList = () => {
                     )
                 )}
             </ul>
-        </div>
+
+            <button>리스트 추가</button>
+        </form>
     )
 }
 
