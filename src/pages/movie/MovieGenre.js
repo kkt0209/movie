@@ -2,22 +2,25 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
-const MovieGenre = () =>{
-    const API_KEY = process.env.REACT_APP_TMDB_API_KEY;
-    const {id} = useParams()
-    const [movies, setMovies] = useState([])
+const MovieGenre = () => {
+  const API_KEY = process.env.REACT_APP_TMDB_API_KEY;
+  const { id } = useParams();
+  const [movies, setMovies] = useState([]);
 
-    useEffect(() => {
-        axios.get(`https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&language=ko-KR&sort_by=popularity.desc&with_genres=${id}&page=1`)
-             .then((response) => {
-                setMovies(response.data.results)
-             })
-             .catch((error) => {
+  useEffect(() => {
+    axios
+      .get(
+        `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&language=ko-KR&sort_by=popularity.desc&with_genres=${id}&page=1`
+      )
+      .then((response) => {
+        setMovies(response.data.results);
+      })
+      .catch((error) => {
         console.error("장르 영화 불러오기 실패", error);
       });
-  }, [id, API_KEY])
+  }, [id, API_KEY]);
 
-    return (
+  return (
     <div className="genre-page">
       <div className="genre-inner">
         <h1 className="genre-page-title">장르 영화</h1>

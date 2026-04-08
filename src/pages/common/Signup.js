@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-// import { handleSignup, test_ftion } from "db/DB";
-import { handleSignup } from "db/DB";
+import { authSignup } from "db/DB";
 
 const Signup = () => {
     const navigate = useNavigate();
@@ -22,7 +21,7 @@ const Signup = () => {
                 birth:birth, phone:phone
             }
 
-            handleSignup(newUser);
+            authSignup(newUser);
             navigate('/login');
         }
     }

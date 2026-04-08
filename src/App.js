@@ -1,18 +1,27 @@
 import './App.css';
+import './MovieDetail.css';
+import './MovieList.css';
+
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { useEffect } from 'react';
 
-import Home from 'pages/common/Home';
 import Navbar from 'components/common/Navbar';
+import Home from 'pages/common/Home';
 import Login from 'pages/common/Login';
 import Signup from 'pages/common/Signup';
 
 import MovieList from 'pages/movie/MovieList';
 import MovieDetail from 'pages/movie/MovieDetail';
 import MovieGenre from 'pages/movie/MovieGenre';
-
+import UserMyPage from 'pages/user/UserMyPage';
 import PersonDetail from 'pages/person/PersonDetail';
 import useAppStore from 'store/useAppStore';
+import UserProfile from 'components/user/UserProfile';
+import UserFilms from 'components/user/UserFilms';
+import UserReviews from 'components/user/UserReviews';
+import UserWatchList from 'components/user/UserWatchList';
+import UserLists from 'components/user/UserLists';
+import UserLikes from 'components/user/UserLikes';
 
 function App() {
   const initApp = useAppStore((state) => state.initApp);
@@ -29,10 +38,18 @@ function App() {
         <Route path='/login' element={<Login/>}/>
         <Route path='/signup' element={<Signup/>}/>
 
+        <Route path='/user' element={<UserMyPage/>}/>
+        <Route path="/user/:id" element={<UserMyPage/>}>
+          <Route path="profile" element={<UserProfile/>}/>
+          <Route path="films" element={<UserFilms/>}/>
+          <Route path="reviews" element={<UserReviews/>}/>
+          <Route path="watchlist" element={<UserWatchList/>}/>
+          <Route path="lists" element={<UserLists/>}/>
+          <Route path="likes" element={<UserLikes/>}/>
+        </Route>
         <Route path='/movie' element={<MovieList/>}/>
         <Route path='/movie/:id' element={<MovieDetail/>}/>
         <Route path="/movie/genre/:id" element={<MovieGenre/>}/>
-
         <Route path='/person/:id' element={<PersonDetail/>}/>
       </Routes>
     </BrowserRouter>
