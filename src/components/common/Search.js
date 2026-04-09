@@ -11,25 +11,17 @@ const Search = ({ getGenreColor }) => {
     const [title, setTitle] = useState('');
     const [movieList, setMovieList] = useState([]);
     const [errorMsg, setErrorMsg] = useState('');
+    const [searchParams, setSearchParams] = useSearchParams();
 
-    const setSearchResults = useAppStore((state) => state.setSearchResults);
+   // const setSearchResults = useAppStore((state) => state.setSearchResults);
 
 
-    const SearchMovie = () => {
+   const SearchMovie = () => {
         if (!title.trim()) return alert("검색어를 입력하세요!");
-        //'검색어' 포함된 데이터를 새로 요청
-        axios.get(`https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&language=ko-KR&query=${title}`)
-            .then(res => {
-                const rawData = res.data.results;
-                const filteredList = rawData.filter((movie) => new Date(movie.release_date) <= new Date());
-                
-                setSearchResults(filteredList);
-            })
-            .catch(err => {
-                console.log(err);
-            });
-        };
-
+        
+        setSearchParams({ query: title });
+    };
+    
     return (
 
         <div>
