@@ -1,18 +1,19 @@
-import React, { useEffect } from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
 import useAppStore from "store/useAppStore";
 import "./UserReviews.css";
 
 const UserReviews = () => {
+  const { id } = useParams();
+  // const loginUser = useAppStore((state) => state.currentUser);
   const getUserReview = useAppStore((state) => state.getUserReview);
-  const loginUser = useAppStore((state) => state.currentUser);
   const userReviews = useAppStore((state) => state.userReviews);
 
   useEffect(() => {
-    if (loginUser?.uid) {
-      getUserReview(loginUser.uid);
+    if (id) {
+      getUserReview(id);
     }
-  }, [loginUser?.uid, getUserReview]);
+  }, [id, getUserReview]);
 
   if (!userReviews || userReviews.length === 0) {
     return (

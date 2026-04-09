@@ -1,12 +1,13 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import useAppStore from "store/useAppStore";
 import "./UserLikes.css";
 
 const UserLikes = () => {
-  const loginUser = useAppStore((state) => state.currentUser);
+  const { id } = useParams();
+  // const loginUser = useAppStore((state) => state.currentUser);
   const likes = useAppStore((state) => state.likes).filter(
-    (like) => like?.uid === loginUser?.uid
+    (like) => like?.uid === id
   );
 
   return (

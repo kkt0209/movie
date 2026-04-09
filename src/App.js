@@ -25,6 +25,7 @@ import UserLikes from 'components/user/UserLikes';
 import UserNewList from 'pages/user/UserNewList';
 import ListDetail from "pages/user/ListDetail";
 import UserProfileEdit from 'components/user/UserProfileEdit';
+import Lists from 'pages/movie/Lists';
 
 function App() {
   const initApp = useAppStore((state) => state.initApp);
@@ -53,7 +54,7 @@ function App() {
           <Route path="likes/:id" element={<UserLikes/>}/>
         </Route>
 
-
+        <Route path="/lists" element={<Lists/>}/>
         <Route path="/list/new/" element={<UserNewList/>}/>
         <Route path="/list/:id" element={<ListDetail />} />
         <Route path='/movie' element={<MovieList/>}/>

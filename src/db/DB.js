@@ -31,7 +31,7 @@ const dbApi = {
         try{
             await signInWithEmailAndPassword(auth, email, password);
 
-            alert("로그인 성공!");
+            // alert("로그인 성공!");
         }catch(e){
             // 로그인시 발생하는 오류 코드
             // auth/invalid-email : 이메일 주소가 유효하지 않은 경우.
@@ -42,10 +42,9 @@ const dbApi = {
         }
     },
 
-    readUserInfo : async() =>{
-        const userDocRef = doc(db, "users", auth.currentUser.uid);
+    readUserInfo: async (uid) => {
+        const userDocRef = doc(db, "users", uid);
         const userSnapshot = await getDoc(userDocRef);
-
         return userSnapshot.data();
     },
 
@@ -124,7 +123,7 @@ const dbApi = {
 
     addDBList : async(newList) =>{
         // const listRef = collection(db, "lists");
-
+        
         // await addDoc(listRef , newList);
     },
 }

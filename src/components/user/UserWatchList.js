@@ -1,13 +1,14 @@
 import React, { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import useAppStore from "store/useAppStore";
 import "./UserWatchList.css";
 
 const UserWatchList = () => {
-  const loginUser = useAppStore((state) => state.currentUser);
+  const { id } = useParams();
+  // const loginUser = useAppStore((state) => state.currentUser);
 
   const watchListItem = useAppStore((state) => state.watchList).find(
-    (watch) => watch?.uid === loginUser?.uid
+    (watch) => watch?.uid === id
   );
 
   const watchItems = watchListItem?.watchList || [];

@@ -25,13 +25,13 @@ const UserProfileEdit = () => {
     return (
         <>
             <div className="user-profile-card">
-                <div className="usr-profile-row">
+                {/* <div className="usr-profile-row">
                     <span className="user-profile-label">이메일 : </span>
                     <span className="user-profile-value">
                         <input value={email}
                                readOnly/>
                     </span>
-                </div>
+                </div> */}
 
                 <div className=" user-profile-row">
                     <span className="user-profile-label">이름 : </span>

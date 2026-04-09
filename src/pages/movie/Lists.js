@@ -1,38 +1,21 @@
 import React from "react";
-import { Link, useParams } from "react-router-dom";
 import useAppStore from "store/useAppStore";
-import "./UserLists.css";
+// import "./UserLists.css";
+import { Link } from "react-router-dom";
 
-const UserLists = () => {
-  const { id } = useParams();
-  const loginUser = useAppStore((state) => state.currentUser);
-  const lists = useAppStore((state) => state.lists).filter(
-    (list) => list?.uid === id
-  );
+const Lists = () => {
+    const lists = useAppStore((state) => state.lists)
 
-  const getListId = (list, index) =>
-    list.id || `${list.uid}-${index}-${list.title}`;
+    const getListId = (list, index) =>
+        list.id || `${list.uid}-${index}-${list.title}`;
 
-  return (
-    <section className="user-lists-section">
-      <div className="user-lists-topbar">
-
-        {id === loginUser?.uid && 
-          <Link to="/list/new" className="user-lists-create-link">
-            리스트 작성
-          </Link>}
-        <span className="user-lists-count">{lists.length}개 리스트</span>
-      </div>
-
-      {lists.length === 0 ? (
-        <div className="user-lists-empty">
-          <p>아직 만든 리스트가 없습니다.</p>
-        </div>
-      ) : (
+    return (
         <div className="user-lists-grid">
+
           {lists.map((list, index) => (
             <article className="user-list-card" key={getListId(list, index)}>
               <div className="user-list-header">
+                <span><Link to={'/user/profile/'+list.uid}>{list.writer}</Link></span>
                 <h3 className="user-list-title">{list.title}</h3>
                 <p className="user-list-desc">{list.desc}</p>
               </div>
@@ -73,9 +56,7 @@ const UserLists = () => {
             </article>
           ))}
         </div>
-      )}
-    </section>
-  );
-};
+    )
+}
 
-export default UserLists;
+export default Lists;
