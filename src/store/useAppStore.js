@@ -57,26 +57,20 @@ const defaultWatchList = [
 ];
 
 const defaultLists = [
-  {
-    uid: "YwY5UFVvXkXcWWiZu83EoWfl1al1",
-    title: "재밌는 영화",
-    desc: "올해 최고로 재밌는 영화",
-    lists: [
-      { movieId: "1268127", poster_path: "/f7sCSLEPRfV2fWQ0RYOtHhnHXuG.jpg" },
-      { movieId: "1297842", poster_path: "/otP94vckeMXAgQxzhcRkZSeSmYv.jpg" },
-      { movieId: "1327819", poster_path: "/vJu9THzQ26Q5sWOVnhOkuRH5M1P.jpg" },
-    ],
-  },
-  {
-    uid: "YwY5UFVvXkXcWWiZu83EoWfl1al1",
-    title: "재미없는 영화",
-    desc: "올해 최고로 재미없는 영화",
-    lists: [
-      { movieId: "1265609", poster_path: "/cfeIYPthWgq5XFZnx7cbpr7xFTp.jpg" },
-      { movieId: "1159559", poster_path: "/gqgBqxyr8tGQGJCFrRWAzfA7Cml.jpg" },
-      { movieId: "1171145", poster_path: "/77ggpowGO0ORQY9x33NeBIPajm1.jpg" },
-    ],
-  },
+  { uid: 'YwY5UFVvXkXcWWiZu83EoWfl1al1', 
+    writer: '김경태',
+    title : '재밌는 영화',
+    desc : '올해 최고로 재밌는 영화',
+    lists: [ { movieId: "1268127", poster_path: '/f7sCSLEPRfV2fWQ0RYOtHhnHXuG.jpg' },
+             { movieId: "1297842", poster_path: '/otP94vckeMXAgQxzhcRkZSeSmYv.jpg' },
+             { movieId: "1327819", poster_path: '/vJu9THzQ26Q5sWOVnhOkuRH5M1P.jpg' }, ]},
+  { uid: 'YwY5UFVvXkXcWWiZu83EoWfl1al1', 
+    title : '재미없는 영화',
+    writer: '김경태',
+    desc : '올해 최고로 재미없는 영화',
+    lists: [ { movieId: "1265609", poster_path: '/cfeIYPthWgq5XFZnx7cbpr7xFTp.jpg' },
+             { movieId: "1159559", poster_path: '/gqgBqxyr8tGQGJCFrRWAzfA7Cml.jpg' },
+             { movieId: "1171145", poster_path: '/77ggpowGO0ORQY9x33NeBIPajm1.jpg' }, ]},
 ];
 
 const defaultLikes = [
@@ -112,10 +106,16 @@ const defaultLikes = [
   },
 ];
 
-const useAppStore = create((set, get) => ({
-const useAppStore = create((set) => ({
+const getResetAuthState = () => ({
   currentUser: null,
   currentUserInfo: null,
+  searchResults: [],
+});
+
+const useAppStore = create((set, get) => ({
+  currentUser: null,
+  currentUserInfo: null,
+  
   movieReviews: defaultMovieReviews,
   userReviews: null,
   films: defaultFilms,
@@ -138,9 +138,10 @@ const useAppStore = create((set) => ({
   initApp: () => {
     const auth = getAuth();
 
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      if (currentUser) {
-        const currentUserInfo = await dbApi.readUserInfo();
+    // onAuthStateChanged는 인증 상태가 변경될 때마다 실행되는 콜백 함수를 등록함
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) =>{
+      if(currentUser){ // 로그인이 되었을 때
+        const currentUserInfo = await dbApi.readUserInfo(currentUser.uid);
         const likeLists = await dbApi.getReviewLikes(currentUser.uid);
 
         set({
@@ -150,14 +151,8 @@ const useAppStore = create((set) => ({
         });
 
         console.log("로그인된 유저 : ", currentUser.uid);
-      } else {
-        set({
-          currentUser: null,
-          currentUserInfo: null,
-          reviewLiked : false,
-          userReviews : [],
-        });
-
+      }else { //로그아웃 되었을 때
+        set(getResetAuthState());
         console.log("로그아웃 상태");
       }
     });
@@ -185,10 +180,10 @@ const useAppStore = create((set) => ({
       return false;
     }
   },
-
-  logout: () => {
+  logout: async () => {
     const auth = getAuth();
-    signOut(auth);
+    set(getResetAuthState());
+    await signOut(auth);
   },
 
   addReview: async (movieReview) => {

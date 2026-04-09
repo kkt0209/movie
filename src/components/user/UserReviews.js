@@ -4,6 +4,8 @@ import useAppStore from "store/useAppStore";
 import "./UserReviews.css";
 
 const UserReviews = () => {
+  const { id } = useParams();
+  // const loginUser = useAppStore((state) => state.currentUser);
   const getUserReview = useAppStore((state) => state.getUserReview);
   const updateReview = useAppStore((state) => state.updateReview);
   const deleteReview = useAppStore((state) => state.deleteReview);
@@ -20,10 +22,10 @@ const UserReviews = () => {
   const [editRating, setEditRating] = useState(0);
 
   useEffect(() => {
-    if (loginUser?.uid) {
-      getUserReview(loginUser.uid);
+    if (id) {
+      getUserReview(id);
     }
-  }, [loginUser?.uid, getUserReview]);
+  }, [id, getUserReview]);
 
   const groupedReviews = useMemo(() => {
     if (!userReviews || userReviews.length === 0) return [];
