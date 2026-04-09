@@ -40,6 +40,8 @@ function App() {
         <Route path='/login' element={<Login/>}/>
         <Route path='/signup' element={<Signup/>}/>
 
+
+
         <Route path="/user" element={<UserMyPage/>}>
           <Route path="profile/:id" element={<UserProfile/>}/>
           <Route path='profile/edit' element={<UserProfileEdit/>}/>
@@ -49,6 +51,7 @@ function App() {
           <Route path="lists/:id" element={<UserLists/>}/>
           <Route path="likes/:id" element={<UserLikes/>}/>
         </Route>
+
 
         <Route path="/list/new/" element={<UserNewList/>}/>
         <Route path='/movie' element={<MovieList/>}/>
