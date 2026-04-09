@@ -28,8 +28,8 @@ const defaultLists = [
              { movieId: "1297842", poster_path: '/otP94vckeMXAgQxzhcRkZSeSmYv.jpg' },
              { movieId: "1327819", poster_path: '/vJu9THzQ26Q5sWOVnhOkuRH5M1P.jpg' }, ]},
   { uid: 'YwY5UFVvXkXcWWiZu83EoWfl1al1', 
-    name : '재미없는 영화',
-    description : '올해 최고로 재미없는 영화',
+    title : '재미없는 영화',
+    desc : '올해 최고로 재미없는 영화',
     lists: [ { movieId: "1265609", poster_path: '/cfeIYPthWgq5XFZnx7cbpr7xFTp.jpg' },
              { movieId: "1159559", poster_path: '/gqgBqxyr8tGQGJCFrRWAzfA7Cml.jpg' },
              { movieId: "1171145", poster_path: '/77ggpowGO0ORQY9x33NeBIPajm1.jpg' }, ]},
@@ -88,6 +88,16 @@ const useAppStore = create((set) => ({
     // 컴포넌트 언마운트 시 옵저버 해제 (메모리 누수 방지)
     return () => unsubscribe();
   },
+  updateUserInfo: async (uid, userInfo) => {
+    await dbApi.updateUserInfo(uid, userInfo);
+
+    set((state) => ({
+      currentUserInfo: {
+        ...state.currentUserInfo,
+        ...userInfo,
+      },
+    }));
+  },
   login: (email, pwd) => {
     dbApi.authLogin(email, pwd);
     return 1;
@@ -122,7 +132,7 @@ const useAppStore = create((set) => ({
     await dbApi.checkDBReviewLike(uid, movieId);
   },
   addList: (list) =>{
-    // dbApi.addDBList(list);
+    dbApi.addDBList(list);
     set((state) => ({
       lists: [...state.lists, list],
   }))},

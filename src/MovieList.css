@@ -54,37 +54,65 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 100px; /* 숫자가 커질수록 포스터 사이가 멀어짐 */
+  gap: 40px; /* 숫자가 커질수록 포스터 사이가 멀어짐 */
   padding: 30px; /* 전체 화면 가장자리와 포스터 사이의 여백 */
 }
 
 
 .movie-card {
   width: 200px;
-  margin-bottom: 0px;
+  position: relative;
+ /* margin-bottom: 0px;*/
   transition: transform 0.2s;
   /*border-bottom: 5px solid transparent; /* 아래쪽 테두리 공간 미리 확보 */
   border-radius: 10px; /* 카드가 둥글게 깎이도록 */
   overflow: hidden;    /* 배경색이 삐져나가지 않게 */
-  background-color: #4b4a4a;
+  background-color: #525151;
   
 }
 
+.movie-card img {
+  width: 100%;
+  display: block;
+  transition: opacity 0.3s ease;
+}
 
-.movie-card:hover {
+
+.movie-card:hover img{
+  /* opacity: 0.5; */
   transform: scale(1.05);
 }
 
-/* 이미지 모서리 둥글게 */
+
+/* 이미지 모서리 둥글게 
 .movie-card img {
   border-radius: 8px;
   width: 100%;
-}
+} */
 
 /* 정보 텍스트 스타일 */
 .movie-info {
-  padding: 10px 5px;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 40%;
+  padding: 15px 10px;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.925));
+
+  box-sizing: border-box;
   color: white;
+  flex-direction: column;
+  justify-content: flex-end;
+  display: flex;
+
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.movie-card:hover .movie-info {
+  opacity: 1;
 }
 
 .movie-title {
@@ -94,6 +122,8 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+
+  font-weight: bold;
 }
 
 .movie-details {
@@ -101,6 +131,7 @@
   font-size: 13px;
   color: #ccc;
   flex-direction: column;
+  font-weight: bold;
 }
 
 
@@ -125,3 +156,40 @@
 .movie-card.genre-animation .movie-details span {
     color: black !important; 
 }*/
+
+
+#genre-text-links {
+  display: flex;
+  gap: 30px;            /* 글자들 사이를 널찍하게 벌림 (원하는 만큼 숫자 키우기) */
+  margin-top: 20px;     /* 제목으로부터 아래로 떨어뜨림 (더 밑으로) */
+  margin-left: 30px;    /* 왼쪽 여백을 주어 좌측으로 이동 (더 좌측으로) */
+  justify-content: flex-start; /* 중앙이 아닌 왼쪽부터 시작하도록 설정 */
+  width: 100%;          /* 한 줄을 다 차지하게 해서 왼쪽 정렬 유지 */
+}
+
+/* 2. 장르 글자 개별 스타일 */
+#genre-text-links span {
+  cursor: pointer;
+  color: #ccc;          /* 기본 글자색 (회색) */
+  font-size: 18px;
+  font-weight: 400;
+  transition: all 0.2s;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+/* 마우스를 올리거나 활성화되었을 때 */
+#genre-text-links span:hover,
+#genre-text-links span.active {
+  color: white;         /* 선택 시 흰색으로 강조 */
+  font-weight: 700;
+  transform: scale(1.1); /* 살짝 커지는 효과 */
+}
+
+/* 3. 텍스트와 포스터 사이의 구분선 (hr) */
+.header-divider {
+  width: 95%;           /* 선이 너무 꽉 차지 않게 조절 */
+  border: 0;
+  height: 1px;          /* 얇은 선 */
+  background: rgba(255, 255, 255, 0.2); /* 반투명한 흰색 선 */
+  margin: 20px auto 40px 30px; /* 위(20), 아래(40), 왼쪽(30) 여백 */
+}

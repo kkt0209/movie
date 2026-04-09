@@ -7,6 +7,7 @@ const UserMyPage = () => {
   const location = useLocation();
 
   const getTitle = () => {
+    if (location.pathname.includes("/profile/edit")) return "Profile Edit";
     if (location.pathname.includes("/profile")) return "Profile";
     if (location.pathname.includes("/films")) return "Films";
     if (location.pathname.includes("/reviews")) return "Reviews";
