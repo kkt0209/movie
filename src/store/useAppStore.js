@@ -110,7 +110,11 @@ const useAppStore = create((set) => ({
     }))
   },
   addReviewLike : async(reviewLiked,liked,uid,movieId) => {
-    await dbApi.addDBReviewLike(reviewLiked,liked,uid,movieId);
+     const newLiked = await dbApi.addDBReviewLike(reviewLiked,liked,uid,movieId);
+
+     set(() => ({
+      reviewLiked : newLiked
+     }))
   },
   checkReviewLike : async (uid,movieId) => {
     const result = await dbApi.checkDBReviewLike(uid, movieId);
