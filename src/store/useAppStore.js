@@ -113,6 +113,7 @@ const defaultLikes = [
 ];
 
 const useAppStore = create((set, get) => ({
+const useAppStore = create((set) => ({
   currentUser: null,
   currentUserInfo: null,
   movieReviews: defaultMovieReviews,
@@ -120,13 +121,19 @@ const useAppStore = create((set, get) => ({
   films: defaultFilms,
   watchList: defaultWatchList,
   lists: defaultLists,
-  likes: defaultLikes,
+  likes: null,
+  reviewLiked: false,
 
   searchResults: [],
   setSearchResults: (results) => set({ searchResults: results }),
 
   setCurrentUser: (loginUser) => set({ currentUser: loginUser }),
   setCurrentUserInfo: (loginUser) => set({ currentUserInfo: loginUser }),
+
+  searchResults: [], // 검색 결과를 담을 배열
+  setSearchResults: (results) => set({ searchResults: results }),
+
+  setReviewLiked: (value) => set({ reviewLiked: value }),
 
   initApp: () => {
     const auth = getAuth();
@@ -147,6 +154,8 @@ const useAppStore = create((set, get) => ({
         set({
           currentUser: null,
           currentUserInfo: null,
+          reviewLiked : false,
+          userReviews : [],
         });
 
         console.log("로그아웃 상태");
@@ -256,6 +265,17 @@ deleteReview: async (reviewId) => {
   checkReviewLike: async (uid, movieId) => {
     const result = await dbApi.checkDBReviewLike(uid, movieId);
     return !!result;
+  addReviewLike : async(reviewLiked,liked,uid,movieId) => {
+     const newLiked = await dbApi.addDBReviewLike(reviewLiked,liked,uid,movieId);
+
+     set(() => ({
+      reviewLiked : newLiked
+     }))
+  },
+  checkReviewLike : async (uid,movieId) => {
+    const result = await dbApi.checkDBReviewLike(uid, movieId);
+
+    set({ reviewLiked: result });
   },
 
   addList: async (list) => {

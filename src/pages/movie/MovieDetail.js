@@ -27,6 +27,14 @@ const MovieDetail = () => {
 
   const [movie, setMovie] = useState(null);
   const [reviewContent, setReviewContent] = useState("");
+  // const [reviewLiked, setReviewLiked] = useState(false);
+
+  const reviewLiked = useAppStore((state) => state.reviewLiked);
+  const setReviewLiked = useAppStore((state) => state.setReviewLiked);
+  
+  // const [reviews, setReviews] = useState([]);
+  // const [reviewTitle, setReviewTitle] = useState("");
+  // const [reviewText, setReviewText] = useState("");
 
   const [recommendIndex, setRecommendIndex] = useState(0);
   const [providers, setProviders] = useState([]);
@@ -105,6 +113,15 @@ const MovieDetail = () => {
     setRecommendIndex(0);
     getMovieReview(id);
   }, [id, getMovieReview]);
+    
+    // getDBReview(id); //리뷰 불러오기
+    // setReviewTitle("");
+    // setReviewText("");
+    // setReviews([]);
+
+    checkDBReviewLike(loginUser?.uid, id);
+    getMovieReview(id); //리뷰 불러오기
+  }, [id,loginUser]);
 
   const trailer = movie?.videos?.results?.find(
     (video) => video.site === "YouTube" && video.type === "Trailer"
@@ -277,6 +294,10 @@ const MovieDetail = () => {
       await addReviewLiked(reviewLiked, likedPayload, loginUser.uid, id);
     } catch (error) {
       console.error("좋아요 처리 실패", error);
+      addReviewLiked(reviewLiked, liked, loginUser.uid, id);
+    }else{
+      alert('로그인 후에 시도해주세요.')
+      navigate('/login', {state:{from:location}});
     }
   };
 

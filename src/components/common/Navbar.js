@@ -14,7 +14,6 @@ const Navbar = () => {
         <li><NavLink to='/' style={({isActive})=>({fontWeight: isActive ? 'bold' : 'normal'})}>홈</NavLink></li>
         <li><NavLink to='/movie' style={({isActive})=>({fontWeight: isActive ? 'bold' : 'normal'})}>영화</NavLink></li>
         <li><NavLink to='/anime' style={({isActive})=>({fontWeight: isActive ? 'bold' : 'normal'})}>애니</NavLink></li>
-        
         { loginUserInfo && <li><Link to={'/user/profile/' + loginUser.uid}><strong>{loginUserInfo?.name}</strong></Link></li>}
         <li>
         { loginUserInfo ? <span onClick={logout}>로그아웃</span>

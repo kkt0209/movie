@@ -86,7 +86,7 @@ const [nowPlaying, setNowPlaying] = useState([]);
 
                             >
                                 <div className="huge-info">
-                                    <span className="trending-tag">인기 급상승 영화</span>
+                                    <span className="trending-tag">인기 급상승</span>
                                     <h1>{movie.title}</h1>
                                     <p>{movie.overview}</p>
                                     <div className="huge-buttons">
