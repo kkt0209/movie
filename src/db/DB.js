@@ -77,7 +77,7 @@ const dbApi = {
         const likeList = await getDocs(q);
 
         const lists = likeList.docs.map(doc => doc.data());
-        console.log(lists);
+    
         return lists;
     },
 

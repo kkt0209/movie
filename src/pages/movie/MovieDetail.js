@@ -112,9 +112,9 @@ const MovieDetail = () => {
     // setReviewText("");
     // setReviews([]);
 
-    checkDBReviewLike(loginUser.uid, id);
+    checkDBReviewLike(loginUser?.uid, id);
     getMovieReview(id); //리뷰 불러오기
-  }, [id]);
+  }, [id,loginUser]);
 
   // 화면에 사용할 데이터
   const trailer = movie?.videos?.results?.find(

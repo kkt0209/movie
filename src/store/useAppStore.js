@@ -73,7 +73,8 @@ const useAppStore = create((set) => ({
         set({ 
           currentUser: null,
           currentUserInfo: null,
-          reviewLiked : false
+          reviewLiked : false,
+          userReviews : [],
         });
         console.log("로그아웃 상태");
       }
