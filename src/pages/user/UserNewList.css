@@ -25,6 +25,14 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 32px;
+  align-items: start;
+}
+
+.user-new-list-left,
+.user-new-list-right {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .user-new-list-field {
@@ -56,46 +64,13 @@
   resize: vertical;
 }
 
-.user-new-list-toolbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 20px;
-}
-
-.user-new-list-search-box {
-  flex: 1;
-}
-
-.user-new-list-actions {
-  display: flex;
-  gap: 10px;
-}
-
-.user-new-list-cancel-btn,
-.user-new-list-save-btn {
-  border: none;
-  padding: 12px 18px;
-  border-radius: 6px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.user-new-list-cancel-btn {
-  background: #64748b;
-  color: white;
-}
-
-.user-new-list-save-btn {
-  background: #16a34a;
-  color: white;
-}
-
 .user-new-list-search-results-wrap {
   border: 1px solid #334155;
   border-radius: 8px;
   overflow: hidden;
   background: #111827;
+  max-height: 320px;
+  overflow-y: auto;
 }
 
 .user-new-list-search-results {
@@ -119,6 +94,7 @@
 .user-new-list-search-poster {
   width: 60px;
   border-radius: 6px;
+  flex-shrink: 0;
 }
 
 .user-new-list-search-info {
@@ -129,6 +105,68 @@
 
 .user-new-list-search-title {
   font-weight: 700;
+}
+
+.user-new-list-added-empty {
+  min-height: 120px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px dashed #334155;
+  border-radius: 8px;
+  color: #94a3b8;
+}
+
+.user-new-list-added-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.user-new-list-added-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  background: #111827;
+}
+
+.user-new-list-added-poster {
+  width: 48px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.user-new-list-added-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.user-new-list-added-title {
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.user-new-list-added-date {
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+.user-new-list-remove-btn {
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: #475569;
+  color: white;
+  cursor: pointer;
+}
+
+.user-new-list-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .user-new-list-preview-box {
@@ -163,13 +201,33 @@
   object-fit: cover;
 }
 
+.user-new-list-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.user-new-list-cancel-btn,
+.user-new-list-save-btn {
+  border: none;
+  padding: 12px 18px;
+  border-radius: 6px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.user-new-list-cancel-btn {
+  background: #64748b;
+  color: white;
+}
+
+.user-new-list-save-btn {
+  background: #16a34a;
+  color: white;
+}
+
 @media (max-width: 768px) {
   .user-new-list-top {
     grid-template-columns: 1fr;
-  }
-
-  .user-new-list-toolbar {
-    flex-direction: column;
-    align-items: stretch;
   }
 }

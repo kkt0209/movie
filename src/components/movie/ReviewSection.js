@@ -5,8 +5,16 @@ const ReviewSection = ({
   reviewContent,
   onChangeContent,
   onAddReview,
-  onCheckLiked, liked,
+  onCheckLiked,
+  liked,
+  watched = false,
+  onToggleWatched = () => {},
+  watchLater = false,
+  onToggleWatchLater = () => {},
+  rating = 0,
+  onChangeRating = () => {},
 }) => {
+  
   const [currentPage, setCurrentPage] = useState(1);
 
   const reviewsPerPage = 5;
@@ -30,6 +38,11 @@ const ReviewSection = ({
     setCurrentPage((prev) => Math.min(prev + 1, totalPages));
   };
 
+  const renderStars = (value) => {
+    const safeValue = Number(value) || 0;
+    return "★".repeat(safeValue) + "☆".repeat(5 - safeValue);
+  };
+
   return (
     <div className="review-section">
       <h3 className="review-title">리뷰</h3>
@@ -40,15 +53,51 @@ const ReviewSection = ({
           value={reviewContent}
           onChange={onChangeContent}
           className="review-textarea"
-        ></textarea>
+        />
 
-        <div className="review-actions">
-          <button type="button" className="ui-button">
-            ★ 별점
-          </button>
-          <button type="button" className="ui-button" onClick={onCheckLiked}>
-            {liked ? "❤️ 좋아요 취소" : "🤍 좋아요"}
-          </button>
+        <div className="review-controls">
+          <div className="review-rating-box">
+            <span className="review-control-label">별점</span>
+            <div className="review-star-picker">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <button
+                  key={star}
+                  type="button"
+                  className={`review-star-btn ${star <= rating ? "active" : ""}`}
+                  onClick={() => onChangeRating(star)}
+                >
+                  ★
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="review-status-buttons">
+            <button
+              type="button"
+              className={`review-status-btn ${watched ? "active" : ""}`}
+              onClick={onToggleWatched}
+            >
+              봤음
+            </button>
+
+            <button
+              type="button"
+              className={`review-status-btn ${liked ? "active" : ""}`}
+              onClick={onCheckLiked}
+            >
+              {liked ? "좋아요 취소" : "좋아요"}
+            </button>
+
+            <button
+              type="button"
+              className={`review-status-btn ${watchLater ? "active" : ""}`}
+              onClick={onToggleWatchLater}
+            >
+              나중에 볼래
+            </button>
+          </div>
+
           <button
             type="button"
             className="submit-button"
@@ -63,10 +112,26 @@ const ReviewSection = ({
         {movieReviews.length > 0 ? (
           visibleReviews.map((review) => (
             <div className="review-card" key={review.id}>
-              <h4>
-                {review.writer} {review.rating}점
-              </h4>
-              <p>{review.content}</p>
+              <div className="review-card-top">
+                <h4 className="review-card-writer">{review.writer}</h4>
+                <span className="review-card-rating">
+                  {renderStars(review.rating)}
+                </span>
+              </div>
+
+              <div className="review-card-badges">
+                {review.watched && (
+                  <span className="review-badge watched">봤음</span>
+                )}
+                {review.liked && (
+                  <span className="review-badge liked">좋아요</span>
+                )}
+                {review.watchLater && (
+                  <span className="review-badge watchlater">나중에 볼래</span>
+                )}
+              </div>
+
+              <p className="review-card-content">{review.content}</p>
             </div>
           ))
         ) : (

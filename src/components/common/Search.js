@@ -3,15 +3,17 @@ import React, { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import useAppStore from "store/useAppStore";
+import DetailSearch from "./DetailSearch";
 
 
-const Search = ({ getGenreColor }) => {
+const Search = ({getGenreColor}) => {
     const API_KEY = process.env.REACT_APP_TMDB_API_KEY;
     const [movie, setMovie] = useState(null);
     const [title, setTitle] = useState('');
     const [movieList, setMovieList] = useState([]);
     const [errorMsg, setErrorMsg] = useState('');
     const [searchParams, setSearchParams] = useSearchParams();
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
 
    // const setSearchResults = useAppStore((state) => state.setSearchResults);
 
@@ -33,10 +35,23 @@ const Search = ({ getGenreColor }) => {
                     <input type='button' value='검색' onClick={SearchMovie} />
                 </div>
 
-                <Link to='/detailsearch' id="detail-search">상세검색🔍</Link>
-            </div>
+               {/*} <span 
+                    id="detail-search" 
+                    onClick={() => setIsFilterOpen(true)}
+                    style={{ cursor: 'pointer' }}
+                >
+                    상세검색🔍
+                </span>*/}
+            </div>{/*searchbox*/}
 
-        </div>
+
+            {isFilterOpen && (
+                <DetailSearch onClose={() => setIsFilterOpen(false)} />
+            )}
+
+
+            </div>
+        
     )
 
 

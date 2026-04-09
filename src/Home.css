@@ -27,17 +27,22 @@
 }
 
 .huge-info {
+    position: relative;
     width: 40%; /* 텍스트 박스 너비 조절 */
     color: white;
-    z-index: 2;
+    z-index: 10;
 }
 
 .trending-tag {
-    font-size: 1.2rem;
+    display: inline-block; /* 크기 적용을 위해 필요 */
+    background-color: #e50914; /* 넷플릭스 시그니처 레드 */
+    color: white; /* 글자색 */
+    padding: 5px 12px;
+    border-radius: 4px;
+    font-size: 0.9rem;
     font-weight: bold;
-    color: #e50914;
-    display: block;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3); /* 살짝 그림자 추가 */
 }
 
 .huge-info h1 {
@@ -234,3 +239,112 @@
     background-color: #141414;
     height: 100vh;
 }
+
+
+
+
+/* 배경을 어둡게 덮는 레이어 */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.85); /* 주변을 어둡게 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* 중앙 필터 박스 */
+.filter-modal {
+    background-color: #181818;
+    width: 580px;
+    padding: 30px;
+    border-radius: 15px;
+    border: 1px solid #333;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.filter-modal h2 {
+    margin-top: 0;
+    margin-bottom: 25px;
+    font-size: 1.5rem;
+    color: rgb(255, 255, 255); /* 강조 레드 */
+}
+
+/* 테이블 레이아웃 */
+.filter-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.filter-table th {
+    text-align: left;
+    padding: 20px 0;
+    color: #aaa;
+    font-size: 0.9rem;
+    width: 30%;
+}
+
+.filter-table td {
+    padding: 15px 0;
+}
+
+/* 연도 버튼들 */
+.year-buttons {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    flex-wrap: wrap;
+}
+
+.year-btn {
+    padding: 8px 15px;
+    background-color: #333;
+    color: white;
+    border: 1px solid #444;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    min-width: 70px; /* 버튼 최소 너비 설정으로 균형감 부여 */
+    transition: all 0.2s;
+}
+
+.year-btn.active {
+    background: #e50914;
+    border-color: #e50914;
+}
+
+/* 하단 버튼 영역 */
+.modal-footer {
+    margin-top: 30px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.close-btn {
+    background: transparent;
+    color: white;
+    border: 1px solid #555;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.apply-btn {
+    background: #e50914;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+
+
+
+

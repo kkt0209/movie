@@ -17,8 +17,16 @@ const MovieHero = ({
   tmdbReviews,
   collection,
   collectionMovies,
-  onCheckLiked, liked,
+  onCheckLiked,
+  liked,
+  watched,
+  onToggleWatched,
+  watchLater,
+  onToggleWatchLater,
+  rating,
+  onChangeRating,
 }) => {
+
   const directors =
     movie.credits?.crew?.filter((person) => person.job === "Director") || [];
 
@@ -166,15 +174,20 @@ const MovieHero = ({
             </div>
           </div>
 
-          {/* 리뷰 영역: info-box 아래 혹은 옆에 위치 */}
           <div className="hero-review-panel">
             <ReviewSection
               movieReviews={movieReviews}
               reviewContent={reviewContent}
               onChangeContent={onChangeContent}
               onAddReview={onAddReview}
-              liked = {liked}
-              onCheckLiked = {onCheckLiked}
+              liked={liked}
+              onCheckLiked={onCheckLiked}
+              watched={watched}
+              onToggleWatched={onToggleWatched}
+              watchLater={watchLater}
+              onToggleWatchLater={onToggleWatchLater}
+              rating={rating}
+              onChangeRating={onChangeRating}
             />
 
             <TmdbReviewSection tmdbReviews={tmdbReviews} />
