@@ -23,6 +23,7 @@ import UserWatchList from 'components/user/UserWatchList';
 import UserLists from 'components/user/UserLists';
 import UserLikes from 'components/user/UserLikes';
 import UserNewList from 'pages/user/UserNewList';
+import UserProfileEdit from 'components/user/UserProfileEdit';
 
 function App() {
   const initApp = useAppStore((state) => state.initApp);
@@ -39,15 +40,16 @@ function App() {
         <Route path='/login' element={<Login/>}/>
         <Route path='/signup' element={<Signup/>}/>
 
-        <Route path='/user' element={<UserMyPage/>}/>
-        <Route path="/user/:id" element={<UserMyPage/>}>
-          <Route path="profile" element={<UserProfile/>}/>
-          <Route path="films" element={<UserFilms/>}/>
-          <Route path="reviews" element={<UserReviews/>}/>
-          <Route path="watchlist" element={<UserWatchList/>}/>
-          <Route path="lists" element={<UserLists/>}/>
-          <Route path="likes" element={<UserLikes/>}/>
+        <Route path="/user" element={<UserMyPage/>}>
+          <Route path="profile/:id" element={<UserProfile/>}/>
+          <Route path='profile/edit' element={<UserProfileEdit/>}/>
+          <Route path="films/:id" element={<UserFilms/>}/>
+          <Route path="reviews/:id" element={<UserReviews/>}/>
+          <Route path="watchlist/:id" element={<UserWatchList/>}/>
+          <Route path="lists/:id" element={<UserLists/>}/>
+          <Route path="likes/:id" element={<UserLikes/>}/>
         </Route>
+
         <Route path="/list/new/" element={<UserNewList/>}/>
         <Route path='/movie' element={<MovieList/>}/>
         <Route path='/movie/:id' element={<MovieDetail/>}/>

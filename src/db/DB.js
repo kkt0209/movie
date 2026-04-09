@@ -1,4 +1,4 @@
-import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, orderBy, query, setDoc, where } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, orderBy, query, setDoc, updateDoc, where } from "firebase/firestore";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "./firebase";
 
@@ -47,6 +47,11 @@ const dbApi = {
         const userSnapshot = await getDoc(userDocRef);
 
         return userSnapshot.data();
+    },
+
+    updateUserInfo: async (uid, userInfo) => {
+        const userDocRef = doc(db, "users", uid);
+        await updateDoc(userDocRef, userInfo);
     },
 
     addDBReviewLike : async(reviewLiked,liked,uid,movieId) => {
@@ -118,9 +123,9 @@ const dbApi = {
     },
 
     addDBList : async(newList) =>{
-        const listRef = collection(db, "lists");
+        // const listRef = collection(db, "lists");
 
-        await addDoc(listRef , newList);
+        // await addDoc(listRef , newList);
     },
 }
 

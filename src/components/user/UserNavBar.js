@@ -1,10 +1,12 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useParams } from "react-router-dom";
 import useAppStore from "store/useAppStore";
 import "./UserNavBar.css";
 
 const UserNavbar = () => {
+  const { id } = useParams();
   const loginUser = useAppStore((state) => state.currentUser);
+  const targetUserId = id || loginUser?.uid;
   const loginUserInfo = useAppStore((state) => state.currentUserInfo);
 
   const films = useAppStore((state) => state.films).filter(
@@ -26,12 +28,12 @@ const UserNavbar = () => {
   const watchCount = watchListItem?.watchList?.length || 0;
 
   const navItems = [
-    { to: "profile", label: "PROFILE" },
-    { to: "films", label: "FILMS" },
-    { to: "reviews", label: "REVIEWS" },
-    { to: "watchlist", label: "WATCHLIST" },
-    { to: "lists", label: "LISTS" },
-    { to: "likes", label: "LIKES" },
+    { to: `/user/profile/${targetUserId}`, label: "PROFILE" },
+    { to: `/user/films/${targetUserId}`, label: "FILMS" },
+    { to: `/user/reviews/${targetUserId}`, label: "REVIEWS" },
+    { to: `/user/watchlist/${targetUserId}`, label: "WATCHLIST" },
+    { to: `/user/lists/${targetUserId}`, label: "LISTS" },
+    { to: `/user/likes/${targetUserId}`, label: "LIKES" },
   ];
 
   const userInitial =

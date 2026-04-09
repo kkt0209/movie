@@ -156,6 +156,15 @@ const MovieDetail = () => {
     if (loginUser) {
       if (!reviewContent.trim()) return;
 
+      const alreadyReviewed = movieReviews.find(
+        (review) => review.uid === loginUser.uid
+      );
+
+      if (alreadyReviewed) {
+        alert("이미 이 영화에 리뷰를 작성했습니다.");
+        return;
+      }
+
       const newReview = {
         id: Date.now(),
         uid : loginUser.uid,
