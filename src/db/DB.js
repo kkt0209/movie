@@ -82,7 +82,7 @@ const dbApi = {
         const likeList = await getDocs(q);
 
         const lists = likeList.docs.map(doc => doc.data());
-        console.log(lists);
+    
         return lists;
     },
 
@@ -103,7 +103,6 @@ const dbApi = {
         const reviewList = await getDocs(q);
 
         return reviewList.docs.map(doc => doc.data());
-
     },
 
     getDBUserReview : async(uid) => {
