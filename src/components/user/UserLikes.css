@@ -1,0 +1,82 @@
+.user-likes-section {
+  max-width: 1100px;
+  margin: 40px auto;
+  padding: 0 20px 40px;
+  color: white;
+}
+
+.user-likes-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #334155;
+}
+
+.user-likes-heading {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.user-likes-count {
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+.user-likes-empty {
+  min-height: 220px;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #94a3b8;
+}
+
+.user-likes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 18px;
+}
+
+.user-like-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-like-poster-link {
+  display: block;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #1e293b;
+  transition: transform 0.2s ease;
+}
+
+.user-like-poster-link:hover {
+  transform: translateY(-4px);
+}
+
+.user-like-poster {
+  width: 100%;
+  display: block;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+}
+
+.user-like-meta {
+  padding-top: 10px;
+}
+
+.user-like-title {
+  margin: 0 0 4px;
+  font-size: 14px;
+  font-weight: 700;
+  color: white;
+}
+
+.user-like-year {
+  font-size: 13px;
+  color: #94a3b8;
+}
