@@ -5,7 +5,7 @@ import "./ListDetail.css";
 
 const ListDetail = () => {
   const { id } = useParams();
-  const lists = useAppStore((state) => state.lists);
+  const lists = useAppStore((state) => state.lists || []);
 
   const getListId = (list, index) =>
     list.id || `${list.uid}-${index}-${list.title}`;
@@ -22,19 +22,19 @@ const ListDetail = () => {
     );
   }
 
+  const movies = Array.isArray(list.lists) ? list.lists : [];
+
   return (
     <section className="list-detail-page">
       <div className="list-detail-inner">
         <div className="list-detail-header">
           <h1 className="list-detail-title">{list.title}</h1>
           <p className="list-detail-desc">{list.desc}</p>
-          <span className="list-detail-count">
-            총 {list.lists?.length || 0}편
-          </span>
+          <span className="list-detail-count">총 {movies.length}편</span>
         </div>
 
         <div className="list-detail-grid">
-          {list.lists?.map((movie) => (
+          {movies.map((movie) => (
             <Link
               to={`/movie/${movie.movieId}`}
               key={movie.movieId}

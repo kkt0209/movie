@@ -5,9 +5,9 @@ import "./UserLists.css";
 
 const UserLists = () => {
   const loginUser = useAppStore((state) => state.currentUser);
-  const lists = useAppStore((state) => state.lists).filter(
-    (list) => list?.uid === loginUser?.uid
-  );
+  const storeLists = useAppStore((state) => state.lists || []);
+
+  const lists = storeLists.filter((list) => list?.uid === loginUser?.uid);
 
   const getListId = (list, index) =>
     list.id || `${list.uid}-${index}-${list.title}`;
@@ -28,48 +28,52 @@ const UserLists = () => {
         </div>
       ) : (
         <div className="user-lists-grid">
-          {lists.map((list, index) => (
-            <article className="user-list-card" key={getListId(list, index)}>
-              <div className="user-list-header">
-                <h3 className="user-list-title">{list.title}</h3>
-                <p className="user-list-desc">{list.desc}</p>
-              </div>
+          {lists.map((list, index) => {
+            const movies = Array.isArray(list?.lists) ? list.lists : [];
 
-              <div className="user-list-meta">
-                <span>{list.lists?.length || 0}편 수록</span>
-                {list.lists?.length > 4 && (
-                  <span className="user-list-more-count">
-                    +{list.lists.length - 4} more
-                  </span>
-                )}
-              </div>
+            return (
+              <article className="user-list-card" key={getListId(list, index)}>
+                <div className="user-list-header">
+                  <h3 className="user-list-title">{list.title}</h3>
+                  <p className="user-list-desc">{list.desc}</p>
+                </div>
 
-              <div className="user-list-posters">
-                {list.lists?.slice(0, 4).map((movie) => (
+                <div className="user-list-meta">
+                  <span>{movies.length}편 수록</span>
+                  {movies.length > 4 && (
+                    <span className="user-list-more-count">
+                      +{movies.length - 4} more
+                    </span>
+                  )}
+                </div>
+
+                <div className="user-list-posters">
+                  {movies.slice(0, 4).map((movie) => (
+                    <Link
+                      to={`/movie/${movie.movieId}`}
+                      key={movie.movieId}
+                      className="user-list-poster-link"
+                    >
+                      <img
+                        className="user-list-poster"
+                        src={`https://image.tmdb.org/t/p/w200${movie.poster_path}`}
+                        alt={movie.title || "movie poster"}
+                      />
+                    </Link>
+                  ))}
+                </div>
+
+                <div className="user-list-actions">
                   <Link
-                    to={`/movie/${movie.movieId}`}
-                    key={movie.movieId}
-                    className="user-list-poster-link"
+                    to={`/list/${getListId(list, index)}`}
+                    className="user-list-detail-link"
                   >
-                    <img
-                      className="user-list-poster"
-                      src={`https://image.tmdb.org/t/p/w200${movie.poster_path}`}
-                      alt={movie.title || "movie poster"}
-                    />
+                    전체보기
                   </Link>
-                ))}
-              </div>
-
-              <div className="user-list-actions">
-                <Link
-                  to={`/list/${getListId(list, index)}`}
-                  className="user-list-detail-link"
-                >
-                  전체보기
-                </Link>
-              </div>
-            </article>
-          ))}
+                </div>
+              </article>
+            );
+          })}
         </div>
       )}
     </section>
