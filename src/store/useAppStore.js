@@ -97,12 +97,15 @@ const getResetAuthState = () => ({
   currentUser: null,
   currentUserInfo: null,
   searchResults: [],
-  reviewLiked: false,
-  userReviews: [],
-  toggleWatchBoolen: false,
-  films: [],
-  watchList: [],
-  lists: [],
+  reviewLiked : false,
+  userReviews : [],
+  toggleWatchBoolen : false,
+  toggleWatcgLaterBoolean : false,
+  films : [],
+  watchList : [],
+  lists : [],
+  userReviews: null,
+  likes : [],
   allLists: [],
 });
 
@@ -119,7 +122,8 @@ const useAppStore = create((set, get) => ({
   allLists: [],
   likes: [],
   reviewLiked: false,
-  toggleWatchBoolen: false,
+  toggleWatchBoolean : false,
+  toggleWatchLaterBoolean : false,
 
   // searchResults: [],
   // setSearchResults: (results) => set({ searchResults: results }),
@@ -132,6 +136,8 @@ const useAppStore = create((set, get) => ({
 
   setReviewLiked: (value) => set({ reviewLiked: value }),
 
+  setToggleWatchLaterBoolean : (value) => set({toggleWatchLaterBoolean : value}),
+
 
   initApp: () => {
     const auth = getAuth();
@@ -142,12 +148,14 @@ const useAppStore = create((set, get) => ({
         const currentUserInfo = await dbApi.readUserInfo(currentUser.uid);
         const likeLists = await dbApi.getReviewLikes(currentUser.uid);
         const filmLists = await dbApi.getUserFilm(currentUser.uid);
+        const watchlists = await dbApi.getToggleWatchLater(currentUser.uid);
 
         set({
           currentUser,
           currentUserInfo,
-          likes: likeLists || [],
-          films: filmLists || [],
+          likes : likeLists || [],
+          films : filmLists || [],
+          watchList : watchlists || [],
         });
 
         console.log("로그인된 유저 : ", currentUser.uid);
@@ -330,7 +338,7 @@ const useAppStore = create((set, get) => ({
   },
   checkReviewLike: async (uid, movieId) => {
     const result = await dbApi.checkDBReviewLike(uid, movieId);
-    return !!result;
+    set({reviewLiked : result});
   },
   // addReviewLike : async(reviewLiked,liked,uid,movieId) => {
   //    const newLiked = await dbApi.addDBReviewLike(reviewLiked,liked,uid,movieId);
@@ -354,11 +362,41 @@ const useAppStore = create((set, get) => ({
   },
   getWatchList: async (uid) => {
     const watchList = await dbApi.getDBUserLists(uid);
-
     set(() => ({
       watchList: watchList || [],
     }));
   },
+
+  toggleWatchLater: async(uid,movie) => {
+    
+    await dbApi.addUserWatchLater(uid, movie);
+
+    const result = await dbApi.checkToggleWatchLater(uid, movie.id);
+
+    set({ toggleWatchLaterBoolean: result });
+
+  },
+  checkToggleWatchLater : async (uid, movieId) => {
+    const result = await dbApi.checkToggleWatchLater(uid, movieId);
+
+    set({toggleWatcgLaterBoolean : result});
+  },
+
+  toggleWatch : async (toggleWatchBoolean, newFilm) => {
+    const toggle = await dbApi.addUserFilm(toggleWatchBoolean, newFilm);
+
+    set(() => ({
+      toggleWatchBoolean : toggle
+    }));
+  },
+  checkToggleWatch : async( uid , movieId ) => {
+    const result = await dbApi.checkToggleFilm(uid, movieId);
+    
+    set({ toggleWatchBoolean: result });
+  },
+  
+
+    
 
   addList: async (list) => {
     await dbApi.addDBList(list);

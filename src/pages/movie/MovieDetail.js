@@ -37,6 +37,10 @@ const MovieDetail = () => {
   const toggleWatch = useAppStore((state) => state.toggleWatch);
   const toggleWatchBoolen = useAppStore((state) => state.toggleWatchBoolen);
   const checkToggleWatch = useAppStore((state) => state.checkToggleWatch);
+
+  const watchLater = useAppStore((state) => state.toggleWatchLaterBoolean);
+  const checkToggleWatchLater = useAppStore((state) => state.checkToggleWatchLater);
+  const setToggleWatchLaterBoolean = useAppStore((state) => state.setToggleWatchLaterBoolean);
   
   // const [reviews, setReviews] = useState([]);
   // const [reviewTitle, setReviewTitle] = useState("");
@@ -62,6 +66,7 @@ const MovieDetail = () => {
     setReviewContent("");
     setRating(1);
     setWatched(false);
+    setToggleWatchLaterBoolean(false);
     setProviderLink("");
 
     window.scrollTo(0, 0);
@@ -125,8 +130,9 @@ const MovieDetail = () => {
     // checkDBReviewLike(loginUser?.uid, id);
     getMovieReview(id);
     checkDBReviewLike(loginUser?.uid, id);
-    checkToggleWatch(loginUser?.uid, id)
-  }, [id, getMovieReview, checkDBReviewLike]);
+    checkToggleWatch(loginUser?.uid, id);
+    checkToggleWatchLater(loginUser?.uid, id);
+  }, [id, getMovieReview, checkDBReviewLike, checkToggleWatchLater]);
     
     // getDBReview(id); //리뷰 불러오기
     // setReviewTitle("");
@@ -177,16 +183,16 @@ const MovieDetail = () => {
     );
   }, [likes, loginUser?.uid, id]);
 
-  const watchLater = useMemo(() => {
-    if (!loginUser?.uid) return false;
+  // const watchLater = useMemo(() => {
+  //   if (!loginUser?.uid) return false;
 
-    const myWatchList =
-      watchList.find((item) => item.uid === loginUser.uid)?.watchList || [];
+  //   const myWatchList =
+  //     watchList.find((item) => item.uid === loginUser.uid)?.watchList || [];
 
-    return myWatchList.some(
-      (item) => String(item.movieId) === String(id)
-    );
-  }, [watchList, loginUser?.uid, id]);
+  //   return myWatchList.some(
+  //     (item) => String(item.movieId) === String(id)
+  //   );
+  // }, [watchList, loginUser?.uid, id]);
 
   const handleToggleWatched = () => {
 
@@ -200,14 +206,14 @@ const MovieDetail = () => {
 
   };
 
-  const handleToggleWatchLater = () => {
+  const handleToggleWatchLater = async() => {
     if (!loginUser) {
       alert("로그인 후에 작성해주세요.");
       navigate("/login", { state: { from: location } });
       return;
     }
 
-    toggleWatchLater(movie);
+    await toggleWatchLater(loginUser?.uid, movie);
   };
 
   const handleAddReview = async (e) => {
