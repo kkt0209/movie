@@ -15,14 +15,6 @@ const UserMyPage = () => {
   //   }
   // }, [loginUser]);
 
-  const navigate = useNavigate();
-  const loginUser = auth.currentUser;
-  useEffect(() => {
-    if (!loginUser) {
-      navigate("/login");
-    }
-  }, [loginUser]);
-
   const getTitle = () => {
     if (location.pathname.includes("/profile/edit")) return "Profile Edit";
     if (location.pathname.includes("/profile")) return "Profile";
