@@ -14,30 +14,38 @@ const UserNavbar = () => {
 
   useEffect(() => {
       const fetchUserInfo = async () => {
-      const data = await dbApi.readUserInfo(id);
-      setUserInfo(data);
+        const data = await dbApi.readUserInfo(id);
+        setUserInfo(data);
       };
 
       if (id) fetchUserInfo();
   }, [id]);
 
-  const films = useAppStore((state) => state.films).filter(
-    (film) => film?.uid === loginUser?.uid
-  );
+  const films = useAppStore((state) => state.films);
+  const reviews = useAppStore((state) => state.userReviews);
+  const watchList = useAppStore((state) => state.watchList);
+  const lists = useAppStore((state) => state.lists);
+  const likes = useAppStore((state) => state.likes);
 
-  const likes = useAppStore((state) => state.likes).filter(
-    (like) => like?.uid === loginUser?.uid
-  );
+  const watchCount = watchList?.watchList?.length || 0;
 
-  const lists = useAppStore((state) => state.lists).filter(
-    (list) => list?.uid === loginUser?.uid
-  );
+  // const watchCount = watchListItem?.watchList?.length || 0;
 
-  const watchListItem = useAppStore((state) => state.watchList).find(
-    (watch) => watch?.uid === loginUser?.uid
-  );
+  const getFilms = useAppStore((state) => state.getFilms);
+  const getUserReview = useAppStore((state) => state.getUserReview);
+  const getWatchList = useAppStore((state) => state.getWatchList);
+  const getUserLists = useAppStore((state) => state.getUserLists);
+  const getLikes = useAppStore((state) => state.getLikes);
 
-  const watchCount = watchListItem?.watchList?.length || 0;
+  useEffect(() => {
+    if (targetUserId) {
+      getFilms(targetUserId);
+      getUserReview(targetUserId);
+      getWatchList(targetUserId);
+      getUserLists(targetUserId);
+      getLikes(targetUserId);
+    }
+  }, [targetUserId, getFilms, getUserReview, getWatchList, getUserLists, getLikes]);
 
   const navItems = [
     { to: `/user/profile/${targetUserId}`, label: "PROFILE" },
@@ -63,7 +71,7 @@ const UserNavbar = () => {
             <h1 className="user-name">
               {userInfo?.name || "USER"}
             </h1>
-            {loginUserInfo && <p className="user-email">{loginUser?.email}</p>}
+            <p className="user-email">{userInfo?.email}</p>
           </div>
         </div>
 
@@ -74,6 +82,12 @@ const UserNavbar = () => {
           </div>
 
           <div className="user-stat-box">
+            <strong>{reviews.length}</strong>
+            <span>REVIEWS</span>
+          </div>
+
+          <div className="user-stat-box">
+            {/* <strong>{watchCount}</strong> */}
             <strong>{watchCount}</strong>
             <span>WATCHLIST</span>
           </div>
