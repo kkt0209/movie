@@ -2,19 +2,6 @@ import { create } from "zustand";
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import dbApi from "db/DB";
 
-const defaultFilms = [
-  {
-    uid: "YwY5UFVvXkXcWWiZu83EoWfl1al1",
-    movieId: "687163",
-    poster_path: "/qqGpVVZk2KD1lAvccgTU4Z6nh1H.jpg",
-  },
-  {
-    uid: "YwY5UFVvXkXcWWiZu83EoWfl1al1",
-    movieId: "1327819",
-    poster_path: "/vJu9THzQ26Q5sWOVnhOkuRH5M1P.jpg",
-  },
-];
-
 const defaultMovieReviews = [
   {
     uid: "YwY5UFVvXkXcWWiZu83EoWfl1al1",
@@ -47,7 +34,7 @@ const defaultMovieReviews = [
 
 const defaultWatchList = [
   {
-    uid: "YwY5UFVvXkXcWWiZu83EoWfl1al1",
+    uid: "GIg2QHjCDGcvhBJC9DPiEUSFH1b2",
     watchList: [
       { movieId: "83533", poster_path: "/l18o0AK18KS118tWeROOKYkF0ng.jpg" },
       { movieId: "1226863", poster_path: "/knaXOBDBecVBWZVup3zXaOoy23v.jpg" },
@@ -110,6 +97,13 @@ const getResetAuthState = () => ({
   currentUser: null,
   currentUserInfo: null,
   searchResults: [],
+  reviewLiked : false,
+  userReviews : [],
+  toggleWatchBoolen : false,
+  films : [],
+  watchList : [],
+  lists : [],
+  userReviews: null,
 });
 
 const useAppStore = create((set, get) => ({
@@ -118,12 +112,12 @@ const useAppStore = create((set, get) => ({
   
   movieReviews: defaultMovieReviews,
   userReviews: null,
-  films: defaultFilms,
+  films: [],
   watchList: defaultWatchList,
   lists: defaultLists,
-  likes: null,
+  likes: [],
   reviewLiked: false,
-  likes: defaultLikes,
+  toggleWatchBoolen : false,
 
   searchResults: [],
   setSearchResults: (results) => set({ searchResults: results }),
@@ -136,6 +130,7 @@ const useAppStore = create((set, get) => ({
 
   setReviewLiked: (value) => set({ reviewLiked: value }),
 
+
   initApp: () => {
     const auth = getAuth();
 
@@ -144,11 +139,13 @@ const useAppStore = create((set, get) => ({
       if(currentUser){ // 로그인이 되었을 때
         const currentUserInfo = await dbApi.readUserInfo(currentUser.uid);
         const likeLists = await dbApi.getReviewLikes(currentUser.uid);
+        const filmLists = await dbApi.getUserFilm(currentUser.uid);
 
         set({
           currentUser,
           currentUserInfo,
-          likes: likeLists || [],
+          likes : likeLists || [],
+          films : filmLists || [],
         });
 
         console.log("로그인된 유저 : ", currentUser.uid);
@@ -262,6 +259,18 @@ deleteReview: async (reviewId) => {
     const result = await dbApi.checkDBReviewLike(uid, movieId);
     return !!result;
   },
+  addReviewLike : async(reviewLiked,liked,uid,movieId) => {
+     const newLiked = await dbApi.addDBReviewLike(reviewLiked,liked,uid,movieId);
+
+     set(() => ({
+      reviewLiked : newLiked
+     }))
+  },
+  checkReviewLike : async (uid,movieId) => {
+    const result = await dbApi.checkDBReviewLike(uid, movieId);
+
+    set({ reviewLiked: result });
+  },
 
   addList: async (list) => {
     await dbApi.addDBList(list);
@@ -321,6 +330,18 @@ deleteReview: async (reviewId) => {
       return { watchList: nextWatchList };
     });
   },
+  toggleWatch : async (toggleWatchBoolen, newFilm) => {
+    const toggle = await dbApi.addUserFilm(toggleWatchBoolen, newFilm);
+
+    set(() => ({
+      toggleWatchBoolen : toggle
+    }));
+  },
+  checkToggleWatch : async( uid , movieId ) => {
+    const result = await dbApi.checkToggleFilm(uid, movieId);
+    set({ toggleWatchBoolen: result });
+  }
+
 }));
 
 export default useAppStore;

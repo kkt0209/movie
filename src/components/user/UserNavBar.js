@@ -22,19 +22,19 @@ const UserNavbar = () => {
   }, [id]);
 
   const films = useAppStore((state) => state.films).filter(
-    (film) => film?.uid === userInfo?.uid
+    (film) => film?.uid === loginUser?.uid
   );
 
   const likes = useAppStore((state) => state.likes).filter(
-    (like) => like?.uid === userInfo?.uid
+    (like) => like?.uid === loginUser?.uid
   );
 
   const lists = useAppStore((state) => state.lists).filter(
-    (list) => list?.uid === userInfo?.uid
+    (list) => list?.uid === loginUser?.uid
   );
 
   const watchListItem = useAppStore((state) => state.watchList).find(
-    (watch) => watch?.uid === userInfo?.uid
+    (watch) => watch?.uid === loginUser?.uid
   );
 
   const watchCount = watchListItem?.watchList?.length || 0;
