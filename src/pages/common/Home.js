@@ -53,12 +53,12 @@ const Home = () => {
 
     return (
         <div id='outer'>
-            <div id='login-box'>
+            {/*<div id='login-box'>
                 {loginUserInfo ? (<div>{loginUserInfo.name}님 환영합니다</div>)
                     : (<div>로그인해주세요</div>
 
                     )}
-            </div>
+            </div>*/}
 
             <div id='main-banner-huge'>
                 <Swiper
