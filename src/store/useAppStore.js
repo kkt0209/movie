@@ -2,96 +2,96 @@ import { create } from "zustand";
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import dbApi from "db/DB";
 
-const defaultMovieReviews = [
-  {
-    uid: "YwY5UFVvXkXcWWiZu83EoWfl1al1",
-    movieId: "1523145",
-    poster_path: "/iGpMm603GUKH2SiXB2S5m4sZ17t.jpg",
-    writer: "kkt",
-    content: "재미없어요 ㅜㅜ",
-    rating: 1,
-    createdAt: "2026. 4. 1.",
-  },
-  {
-    uid: "YwY5UFVvXkXcWWiZu83EoWfl1al1",
-    movieId: "1327819",
-    poster_path: "/vJu9THzQ26Q5sWOVnhOkuRH5M1P.jpg",
-    writer: "kkt",
-    content: "완전 재밌어요",
-    rating: 5,
-    createdAt: "2026. 4. 1.",
-  },
-  {
-    uid: "YwY5UFVvXkXcWWiZu83EoWfl1al1",
-    movieId: "687163",
-    poster_path: "/qqGpVVZk2KD1lAvccgTU4Z6nh1H.jpg",
-    writer: "kkt",
-    content: "재밌었어요ㅎㅎ",
-    rating: 5,
-    createdAt: "2026. 4. 1.",
-  },
-];
+// const defaultMovieReviews = [
+//   {
+//     uid: "YwY5UFVvXkXcWWiZu83EoWfl1al1",
+//     movieId: "1523145",
+//     poster_path: "/iGpMm603GUKH2SiXB2S5m4sZ17t.jpg",
+//     writer: "kkt",
+//     content: "재미없어요 ㅜㅜ",
+//     rating: 1,
+//     createdAt: "2026. 4. 1.",
+//   },
+//   {
+//     uid: "YwY5UFVvXkXcWWiZu83EoWfl1al1",
+//     movieId: "1327819",
+//     poster_path: "/vJu9THzQ26Q5sWOVnhOkuRH5M1P.jpg",
+//     writer: "kkt",
+//     content: "완전 재밌어요",
+//     rating: 5,
+//     createdAt: "2026. 4. 1.",
+//   },
+//   {
+//     uid: "YwY5UFVvXkXcWWiZu83EoWfl1al1",
+//     movieId: "687163",
+//     poster_path: "/qqGpVVZk2KD1lAvccgTU4Z6nh1H.jpg",
+//     writer: "kkt",
+//     content: "재밌었어요ㅎㅎ",
+//     rating: 5,
+//     createdAt: "2026. 4. 1.",
+//   },
+// ];
 
-const defaultWatchList = [
-  {
-    uid: "GIg2QHjCDGcvhBJC9DPiEUSFH1b2",
-    watchList: [
-      { movieId: "83533", poster_path: "/l18o0AK18KS118tWeROOKYkF0ng.jpg" },
-      { movieId: "1226863", poster_path: "/knaXOBDBecVBWZVup3zXaOoy23v.jpg" },
-      { movieId: "1084242", poster_path: "/ib6v6qUXzez1x2qIOLN7C0yJNPQ.jpg" },
-    ],
-  },
-];
+// const defaultWatchList = [
+//   {
+//     uid: "GIg2QHjCDGcvhBJC9DPiEUSFH1b2",
+//     watchList: [
+//       { movieId: "83533", poster_path: "/l18o0AK18KS118tWeROOKYkF0ng.jpg" },
+//       { movieId: "1226863", poster_path: "/knaXOBDBecVBWZVup3zXaOoy23v.jpg" },
+//       { movieId: "1084242", poster_path: "/ib6v6qUXzez1x2qIOLN7C0yJNPQ.jpg" },
+//     ],
+//   },
+// ];
 
-const defaultLists = [
-  { uid: 'YwY5UFVvXkXcWWiZu83EoWfl1al1', 
-    writer: '김경태',
-    title : '재밌는 영화',
-    desc : '올해 최고로 재밌는 영화',
-    lists: [ { movieId: "1268127", poster_path: '/f7sCSLEPRfV2fWQ0RYOtHhnHXuG.jpg' },
-             { movieId: "1297842", poster_path: '/otP94vckeMXAgQxzhcRkZSeSmYv.jpg' },
-             { movieId: "1327819", poster_path: '/vJu9THzQ26Q5sWOVnhOkuRH5M1P.jpg' }, ]},
-  { uid: 'YwY5UFVvXkXcWWiZu83EoWfl1al1', 
-    title : '재미없는 영화',
-    writer: '김경태',
-    desc : '올해 최고로 재미없는 영화',
-    lists: [ { movieId: "1265609", poster_path: '/cfeIYPthWgq5XFZnx7cbpr7xFTp.jpg' },
-             { movieId: "1159559", poster_path: '/gqgBqxyr8tGQGJCFrRWAzfA7Cml.jpg' },
-             { movieId: "1171145", poster_path: '/77ggpowGO0ORQY9x33NeBIPajm1.jpg' }, ]},
-];
+// const defaultLists = [
+//   { uid: 'YwY5UFVvXkXcWWiZu83EoWfl1al1', 
+//     writer: '김경태',
+//     title : '재밌는 영화',
+//     desc : '올해 최고로 재밌는 영화',
+//     lists: [ { movieId: "1268127", poster_path: '/f7sCSLEPRfV2fWQ0RYOtHhnHXuG.jpg' },
+//              { movieId: "1297842", poster_path: '/otP94vckeMXAgQxzhcRkZSeSmYv.jpg' },
+//              { movieId: "1327819", poster_path: '/vJu9THzQ26Q5sWOVnhOkuRH5M1P.jpg' }, ]},
+//   { uid: 'YwY5UFVvXkXcWWiZu83EoWfl1al1', 
+//     title : '재미없는 영화',
+//     writer: '김경태',
+//     desc : '올해 최고로 재미없는 영화',
+//     lists: [ { movieId: "1265609", poster_path: '/cfeIYPthWgq5XFZnx7cbpr7xFTp.jpg' },
+//              { movieId: "1159559", poster_path: '/gqgBqxyr8tGQGJCFrRWAzfA7Cml.jpg' },
+//              { movieId: "1171145", poster_path: '/77ggpowGO0ORQY9x33NeBIPajm1.jpg' }, ]},
+// ];
 
-const defaultLikes = [
-  {
-    uid: "YwY5UFVvXkXcWWiZu83EoWfl1al1",
-    movieId: "687163",
-    poster_path: "/qqGpVVZk2KD1lAvccgTU4Z6nh1H.jpg",
-  },
-  {
-    uid: "YwY5UFVvXkXcWWiZu83EoWfl1al1",
-    movieId: "1226863",
-    poster_path: "/knaXOBDBecVBWZVup3zXaOoy23v.jpg",
-  },
-  {
-    uid: "YwY5UFVvXkXcWWiZu83EoWfl1al1",
-    movieId: "1327819",
-    poster_path: "/vJu9THzQ26Q5sWOVnhOkuRH5M1P.jpg",
-  },
-  {
-    uid: "YwY5UFVvXkXcWWiZu83EoWfl1al1",
-    movieId: "83533",
-    poster_path: "/l18o0AK18KS118tWeROOKYkF0ng.jpg",
-  },
-  {
-    uid: "YwY5UFVvXkXcWWiZu83EoWfl1al1",
-    movieId: "1268127",
-    poster_path: "/f7sCSLEPRfV2fWQ0RYOtHhnHXuG.jpg",
-  },
-  {
-    uid: "YwY5UFVvXkXcWWiZu83EoWfl1al1",
-    movieId: "1297842",
-    poster_path: "/otP94vckeMXAgQxzhcRkZSeSmYv.jpg",
-  },
-];
+// const defaultLikes = [
+//   {
+//     uid: "YwY5UFVvXkXcWWiZu83EoWfl1al1",
+//     movieId: "687163",
+//     poster_path: "/qqGpVVZk2KD1lAvccgTU4Z6nh1H.jpg",
+//   },
+//   {
+//     uid: "YwY5UFVvXkXcWWiZu83EoWfl1al1",
+//     movieId: "1226863",
+//     poster_path: "/knaXOBDBecVBWZVup3zXaOoy23v.jpg",
+//   },
+//   {
+//     uid: "YwY5UFVvXkXcWWiZu83EoWfl1al1",
+//     movieId: "1327819",
+//     poster_path: "/vJu9THzQ26Q5sWOVnhOkuRH5M1P.jpg",
+//   },
+//   {
+//     uid: "YwY5UFVvXkXcWWiZu83EoWfl1al1",
+//     movieId: "83533",
+//     poster_path: "/l18o0AK18KS118tWeROOKYkF0ng.jpg",
+//   },
+//   {
+//     uid: "YwY5UFVvXkXcWWiZu83EoWfl1al1",
+//     movieId: "1268127",
+//     poster_path: "/f7sCSLEPRfV2fWQ0RYOtHhnHXuG.jpg",
+//   },
+//   {
+//     uid: "YwY5UFVvXkXcWWiZu83EoWfl1al1",
+//     movieId: "1297842",
+//     poster_path: "/otP94vckeMXAgQxzhcRkZSeSmYv.jpg",
+//   },
+// ];
 
 const getResetAuthState = () => ({
   currentUser: null,
@@ -110,17 +110,17 @@ const useAppStore = create((set, get) => ({
   currentUser: null,
   currentUserInfo: null,
   
-  movieReviews: defaultMovieReviews,
-  userReviews: null,
+  movieReviews: [],
+  userReviews: [],
   films: [],
-  watchList: defaultWatchList,
-  lists: defaultLists,
+  watchList: [],
+  lists: [],
   likes: [],
   reviewLiked: false,
   toggleWatchBoolen : false,
 
-  searchResults: [],
-  setSearchResults: (results) => set({ searchResults: results }),
+  // searchResults: [],
+  // setSearchResults: (results) => set({ searchResults: results }),
 
   setCurrentUser: (loginUser) => set({ currentUser: loginUser }),
   setCurrentUserInfo: (loginUser) => set({ currentUserInfo: loginUser }),
@@ -259,18 +259,18 @@ deleteReview: async (reviewId) => {
     const result = await dbApi.checkDBReviewLike(uid, movieId);
     return !!result;
   },
-  addReviewLike : async(reviewLiked,liked,uid,movieId) => {
-     const newLiked = await dbApi.addDBReviewLike(reviewLiked,liked,uid,movieId);
+  // addReviewLike : async(reviewLiked,liked,uid,movieId) => {
+  //    const newLiked = await dbApi.addDBReviewLike(reviewLiked,liked,uid,movieId);
 
-     set(() => ({
-      reviewLiked : newLiked
-     }))
-  },
-  checkReviewLike : async (uid,movieId) => {
-    const result = await dbApi.checkDBReviewLike(uid, movieId);
+  //    set(() => ({
+  //     reviewLiked : newLiked
+  //    }))
+  // },
+  // checkReviewLike : async (uid,movieId) => {
+  //   const result = await dbApi.checkDBReviewLike(uid, movieId);
 
-    set({ reviewLiked: result });
-  },
+  //   set({ reviewLiked: result });
+  // },
 
   addList: async (list) => {
     await dbApi.addDBList(list);
