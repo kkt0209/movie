@@ -8,6 +8,7 @@ const dbApi = {
         try{
             await createUserWithEmailAndPassword(auth, user.email, user.pwd);
             const newUser = {
+                    email : user.email,
                     name: user.name, 
                     birth: user.birth,
                     phone: user.phone
