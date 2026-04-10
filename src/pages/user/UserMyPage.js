@@ -1,8 +1,8 @@
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import React, { useEffect } from "react";
+import React from "react";
 import UserNavbar from "components/user/UserNavBar";
 import "./UserMyPage.css";
-import { auth } from "db/firebase";
+
 
 const UserMyPage = () => {
   const location = useLocation();
