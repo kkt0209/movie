@@ -14,6 +14,19 @@ const UserNavbar = () => {
 
   useEffect(() => {
       const fetchUserInfo = async () => {
+      const data = await dbApi.readUserInfo(id);
+      setUserInfo(data);
+      };
+
+      if (id) fetchUserInfo();
+  }, [id]);
+
+  const films = useAppStore((state) => state.films).filter(
+    (film) => film?.uid === loginUser?.uid
+  );
+
+  useEffect(() => {
+      const fetchUserInfo = async () => {
         const data = await dbApi.readUserInfo(id);
         setUserInfo(data);
       };

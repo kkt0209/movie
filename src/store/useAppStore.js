@@ -398,6 +398,21 @@ const useAppStore = create((set, get) => ({
   },
 
 
+      return { watchList: nextWatchList };
+    });
+  },
+  toggleWatch : async (toggleWatchBoolen, newFilm) => {
+    const toggle = await dbApi.addUserFilm(toggleWatchBoolen, newFilm);
+
+    set(() => ({
+      toggleWatchBoolen : toggle
+    }));
+  },
+  checkToggleWatch : async( uid , movieId ) => {
+    const result = await dbApi.checkToggleFilm(uid, movieId);
+    set({ toggleWatchBoolen: result });
+  }
+
 }));
 
 export default useAppStore;

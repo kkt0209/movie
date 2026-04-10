@@ -228,6 +228,41 @@ const dbApi = {
 
         return snap.exists();
     },
+
+    addUserFilm : async(toggle, newFilm) => {
+        const docRef = doc(db, "films", `${newFilm.uid}_${newFilm.movieId}`);
+        
+        if (toggle) {
+            await deleteDoc(docRef); // 취소
+            return false;
+        } else {
+            await setDoc(docRef, newFilm);
+            return true;
+        }
+    },
+
+    getUserFilm : async(uid) => {
+        const q = query(
+            collection(db, "films"),
+            where("uid", "==", uid)
+        );
+
+        const userFilm = await getDocs(q);
+
+        const docItems = Array();
+
+        userFilm.docs.map(doc => docItems.push(doc.data()));
+
+        return docItems;
+    },
+    checkToggleFilm : async(uid, movieId) =>{
+        const docId = `${uid}_${movieId}`;
+        const ref = doc(db, "films", docId);
+
+        const snap = await getDoc(ref);
+
+        return snap.exists();
+    },
 }
 
 export default dbApi;

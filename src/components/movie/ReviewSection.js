@@ -47,6 +47,32 @@ const ReviewSection = ({
     <div className="review-section">
       <h3 className="review-title">리뷰</h3>
 
+      <div className="review-status-buttons">
+            <button
+              type="button"
+              className={`review-status-btn ${watched ? "active" : ""}`}
+              onClick={onToggleWatched}
+            >
+              봤음
+            </button>
+
+            <button
+              type="button"
+              className={`review-status-btn ${liked ? "active" : ""}`}
+              onClick={onCheckLiked}
+            >
+              {liked ? "좋아요 취소" : "좋아요"}
+            </button>
+
+            <button
+              type="button"
+              className={`review-status-btn ${watchLater ? "active" : ""}`}
+              onClick={onToggleWatchLater}
+            >
+              리스트 추가
+            </button>
+          </div>
+          
       <div className="review-form">
         <textarea
           placeholder="리뷰를 입력하세요"
@@ -72,31 +98,7 @@ const ReviewSection = ({
             </div>
           </div>
 
-          <div className="review-status-buttons">
-            <button
-              type="button"
-              className={`review-status-btn ${watched ? "active" : ""}`}
-              onClick={onToggleWatched}
-            >
-              봤음
-            </button>
-
-            <button
-              type="button"
-              className={`review-status-btn ${liked ? "active" : ""}`}
-              onClick={onCheckLiked}
-            >
-              {liked ? "좋아요 취소" : "좋아요"}
-            </button>
-
-            <button
-              type="button"
-              className={`review-status-btn ${watchLater ? "active" : ""}`}
-              onClick={onToggleWatchLater}
-            >
-              나중에 볼래
-            </button>
-          </div>
+          
 
           <button
             type="button"
@@ -117,18 +119,6 @@ const ReviewSection = ({
                 <span className="review-card-rating">
                   {renderStars(review.rating)}
                 </span>
-              </div>
-
-              <div className="review-card-badges">
-                {review.watched && (
-                  <span className="review-badge watched">봤음</span>
-                )}
-                {review.liked && (
-                  <span className="review-badge liked">좋아요</span>
-                )}
-                {review.watchLater && (
-                  <span className="review-badge watchlater">나중에 볼래</span>
-                )}
               </div>
 
               <p className="review-card-content">{review.content}</p>

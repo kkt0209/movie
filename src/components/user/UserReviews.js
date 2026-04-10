@@ -165,7 +165,7 @@ const UserReviews = () => {
                   )}
                   {watchLater && (
                     <span className="user-review-status watchlater">
-                      나중에 볼래
+                      리스트 추가
                     </span>
                   )}
                 </div>

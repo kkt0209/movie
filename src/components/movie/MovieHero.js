@@ -8,6 +8,7 @@ const MovieHero = ({
   movie,
   trailer,
   providers,
+  providerLink,
   certification,
   releaseDate,
   movieReviews,
@@ -73,13 +74,23 @@ const MovieHero = ({
             <CollectionSection
               collection={collection}
               collectionMovies={collectionMovies}
+              currentMovieId={movie.id}
             />
           </div>
 
           {/* 중앙/오른쪽 정보 영역: 내용이 길어지는 부분 */}
           <div className="info-box">
             <h1>{movie.title}</h1>
+
+            {movie.original_title && movie.original_title !== movie.title && (
+              <p className="movie-original-title">{movie.original_title}</p>
+            )}
+
             <p className="movie-year">{movie.release_date?.slice(0, 4)}</p>
+
+            {movie.tagline && (
+              <p className="movie-tagline">{movie.tagline}</p>
+            )}
 
             <div className="movie-meta-row">
               <span className="meta-chip">{certification}</span>
@@ -106,20 +117,41 @@ const MovieHero = ({
               <div className="provider-section">
                 <h3 className="provider-title">시청 가능 서비스</h3>
                 <div className="provider-list">
-                  {providers.map((provider) => (
-                    <div className="provider-chip" key={provider.provider_id}>
-                      {provider.logo_path && (
-                        <img
-                          src={`https://image.tmdb.org/t/p/w92${provider.logo_path}`}
-                          alt={provider.provider_name}
-                        />
-                      )}
-                      <span>{provider.provider_name}</span>
+                  {providers.map((provider) => {
+                    const content = (
+                      <>
+                        {provider.logo_path && (
+                          <img
+                            src={`https://image.tmdb.org/t/p/w92${provider.logo_path}`}
+                            alt={provider.provider_name}
+                          />
+                        )}
+                        <span>{provider.provider_name}</span>
+                      </>
+                    );
+
+                  return providerLink ? (
+                    <a
+                      key={provider.provider_id}
+                      href={providerLink}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="provider-chip provider-card"
+                    >
+                      {content}
+                    </a>
+                  ) : (
+                    <div
+                      className="provider-chip provider-card"
+                      key={provider.provider_id}
+                    >
+                      {content}
                     </div>
-                  ))}
-                </div>
+                  );
+                })}
               </div>
-            )}
+            </div>
+          )}
 
             <div className="genre-section">
               <h3 className="genre-title">장르</h3>
