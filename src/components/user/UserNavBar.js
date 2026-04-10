@@ -1,13 +1,25 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { NavLink, useParams } from "react-router-dom";
 import useAppStore from "store/useAppStore";
 import "./UserNavBar.css";
+import dbApi from "db/DB";
 
 const UserNavbar = () => {
   const { id } = useParams();
   const loginUser = useAppStore((state) => state.currentUser);
   const targetUserId = id || loginUser?.uid;
   const loginUserInfo = useAppStore((state) => state.currentUserInfo);
+
+  const [userInfo, setUserInfo] = useState(null);
+
+  useEffect(() => {
+      const fetchUserInfo = async () => {
+      const data = await dbApi.readUserInfo(id);
+      setUserInfo(data);
+      };
+
+      if (id) fetchUserInfo();
+  }, [id]);
 
   const films = useAppStore((state) => state.films).filter(
     (film) => film?.uid === loginUser?.uid
@@ -37,8 +49,8 @@ const UserNavbar = () => {
   ];
 
   const userInitial =
-    loginUserInfo?.name?.slice(0, 1) ||
-    loginUser?.email?.slice(0, 1)?.toUpperCase() ||
+    userInfo?.name?.slice(0, 1) ||
+    userInfo?.email?.slice(0, 1)?.toUpperCase() ||
     "U";
 
   return (
@@ -49,9 +61,9 @@ const UserNavbar = () => {
 
           <div className="user-meta">
             <h1 className="user-name">
-              {loginUserInfo?.name || "USER"}
+              {userInfo?.name || "USER"}
             </h1>
-            <p className="user-email">{loginUser?.email}</p>
+            {loginUserInfo && <p className="user-email">{loginUser?.email}</p>}
           </div>
         </div>
 

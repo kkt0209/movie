@@ -1,9 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import useAppStore from "store/useAppStore";
 import "./UserReviews.css";
 
 const UserReviews = () => {
+  const { id } = useParams();
+  // const loginUser = useAppStore((state) => state.currentUser);
   const getUserReview = useAppStore((state) => state.getUserReview);
   const updateReview = useAppStore((state) => state.updateReview);
   const deleteReview = useAppStore((state) => state.deleteReview);
@@ -20,10 +22,12 @@ const UserReviews = () => {
   const [editRating, setEditRating] = useState(0);
 
   useEffect(() => {
-    if (loginUser?.uid) {
-      getUserReview(loginUser.uid);
+    if (id) {
+      getUserReview(id);
     }
-  }, [loginUser?.uid, getUserReview]);
+  }, [id, getUserReview]);
+
+  
 
   const groupedReviews = useMemo(() => {
     if (!userReviews || userReviews.length === 0) return [];
@@ -161,7 +165,7 @@ const UserReviews = () => {
                   )}
                   {watchLater && (
                     <span className="user-review-status watchlater">
-                      나중에 볼래
+                      리스트 추가
                     </span>
                   )}
                 </div>

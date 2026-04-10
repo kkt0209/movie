@@ -31,6 +31,12 @@ const MovieDetail = () => {
 
   const reviewLiked = useAppStore((state) => state.reviewLiked);
   const setReviewLiked = useAppStore((state) => state.setReviewLiked);
+
+  const checkDBReviewLike = useAppStore((state) => state.checkReviewLike);
+
+  const toggleWatch = useAppStore((state) => state.toggleWatch);
+  const toggleWatchBoolen = useAppStore((state) => state.toggleWatchBoolen);
+  const checkToggleWatch = useAppStore((state) => state.checkToggleWatch);
   
   // const [reviews, setReviews] = useState([]);
   // const [reviewTitle, setReviewTitle] = useState("");
@@ -40,8 +46,9 @@ const MovieDetail = () => {
   const [providers, setProviders] = useState([]);
   const [releaseInfo, setReleaseInfo] = useState([]);
   const [collection, setCollection] = useState(null);
+  const [providerLink, setProviderLink] = useState("");
 
-  const [rating, setRating] = useState(0);
+  const [rating, setRating] = useState(1);
   const [watched, setWatched] = useState(false);
 
   useEffect(() => {
@@ -53,8 +60,9 @@ const MovieDetail = () => {
     setCollection(null);
     setRecommendIndex(0);
     setReviewContent("");
-    setRating(0);
+    setRating(1);
     setWatched(false);
+    setProviderLink("");
 
     window.scrollTo(0, 0);
 
@@ -81,6 +89,7 @@ const MovieDetail = () => {
         if (isMounted) {
           const kr = response.data.results?.KR;
           setProviders(kr?.flatrate || []);
+          setProviderLink(kr?.link || "");
         }
       })
       .catch((error) => {
@@ -109,19 +118,20 @@ const MovieDetail = () => {
     };
   }, [id, API_KEY]);
 
+  
+
   useEffect(() => {
     setRecommendIndex(0);
+    // checkDBReviewLike(loginUser?.uid, id);
     getMovieReview(id);
-  }, [id, getMovieReview]);
+    checkDBReviewLike(loginUser?.uid, id);
+    checkToggleWatch(loginUser?.uid, id)
+  }, [id, getMovieReview, checkDBReviewLike]);
     
     // getDBReview(id); //리뷰 불러오기
     // setReviewTitle("");
     // setReviewText("");
     // setReviews([]);
-
-    checkDBReviewLike(loginUser?.uid, id);
-    getMovieReview(id); //리뷰 불러오기
-  }, [id,loginUser]);
 
   const trailer = movie?.videos?.results?.find(
     (video) => video.site === "YouTube" && video.type === "Trailer"
@@ -158,7 +168,7 @@ const MovieDetail = () => {
       ? movie.images.backdrops.slice(0, 6)
       : movie?.images?.posters?.slice(0, 6) || [];
 
-  const reviewLiked = useMemo(() => {
+  useMemo(() => {
     if (!loginUser?.uid) return false;
 
     return likes.some(
@@ -179,7 +189,15 @@ const MovieDetail = () => {
   }, [watchList, loginUser?.uid, id]);
 
   const handleToggleWatched = () => {
-    setWatched((prev) => !prev);
+
+    const newFilm = {
+      uid: loginUser?.uid,
+      movieId: id,
+      poster_path: movie.poster_path
+    }
+
+    toggleWatch(toggleWatchBoolen, newFilm);
+
   };
 
   const handleToggleWatchLater = () => {
@@ -202,6 +220,10 @@ const MovieDetail = () => {
     }
 
     if (!reviewContent.trim()) return;
+    if (rating < 1) {
+      alert("별점은 최소 1점 이상 선택해주세요.");
+      return;
+    }
 
     const alreadyReviewed = movieReviews.find(
       (review) => review.uid === loginUser.uid
@@ -232,7 +254,7 @@ const MovieDetail = () => {
 
     await addReview(newReview);
     setReviewContent("");
-    setRating(0);
+    setRating(1);
     setWatched(false);
   };
 
@@ -294,10 +316,7 @@ const MovieDetail = () => {
       await addReviewLiked(reviewLiked, likedPayload, loginUser.uid, id);
     } catch (error) {
       console.error("좋아요 처리 실패", error);
-      addReviewLiked(reviewLiked, liked, loginUser.uid, id);
-    }else{
-      alert('로그인 후에 시도해주세요.')
-      navigate('/login', {state:{from:location}});
+      addReviewLiked(reviewLiked, likedPayload, loginUser.uid, id);
     }
   };
 
@@ -322,12 +341,13 @@ const MovieDetail = () => {
         collectionMovies={collectionMovies}
         liked={reviewLiked}
         onCheckLiked={reviewLikedCheck}
-        watched={watched}
+        watched={toggleWatchBoolen}
         onToggleWatched={handleToggleWatched}
         watchLater={watchLater}
         onToggleWatchLater={handleToggleWatchLater}
         rating={rating}
         onChangeRating={setRating}
+        providerLink={providerLink}
       />
 
       <div className="detail-bottom">

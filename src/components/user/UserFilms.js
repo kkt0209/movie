@@ -1,14 +1,16 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
 import useAppStore from "store/useAppStore";
 import "./UserFilms.css";
 
 const UserFilms = () => {
-  const loginUser = useAppStore((state) => state.currentUser);
+  const { id } = useParams();
+  // const loginUser = useAppStore((state) => state.currentUser);
+  const [userInfo, setUserInfo] = useState(null);
   const films = useAppStore((state) => state.films).filter(
-    (film) => film?.uid === loginUser?.uid
+    (film) => film?.uid === id
   );
-
+  
   if (films.length === 0) {
     return (
       <div className="user-films-empty">

@@ -1,9 +1,10 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import useAppStore from "store/useAppStore";
 import "./UserLists.css";
 
 const UserLists = () => {
+  const { id } = useParams();
   const loginUser = useAppStore((state) => state.currentUser);
   const storeLists = useAppStore((state) => state.lists || []);
 
@@ -15,10 +16,11 @@ const UserLists = () => {
   return (
     <section className="user-lists-section">
       <div className="user-lists-topbar">
-        <Link to="/list/new" className="user-lists-create-link">
-          리스트 작성
-        </Link>
 
+        {id === loginUser?.uid && 
+          <Link to="/list/new" className="user-lists-create-link">
+            리스트 작성
+          </Link>}
         <span className="user-lists-count">{lists.length}개 리스트</span>
       </div>
 
