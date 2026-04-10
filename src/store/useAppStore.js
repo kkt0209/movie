@@ -97,27 +97,29 @@ const getResetAuthState = () => ({
   currentUser: null,
   currentUserInfo: null,
   searchResults: [],
-  reviewLiked : false,
-  userReviews : [],
-  toggleWatchBoolen : false,
-  films : [],
-  watchList : [],
-  lists : [],
-  userReviews: null,
+  reviewLiked: false,
+  userReviews: [],
+  toggleWatchBoolen: false,
+  films: [],
+  watchList: [],
+  lists: [],
+  allLists: [],
 });
 
 const useAppStore = create((set, get) => ({
   currentUser: null,
   currentUserInfo: null,
-  
+
   movieReviews: [],
   userReviews: [],
   films: [],
+  // reviews: [],
   watchList: [],
   lists: [],
+  allLists: [],
   likes: [],
   reviewLiked: false,
-  toggleWatchBoolen : false,
+  toggleWatchBoolen: false,
 
   // searchResults: [],
   // setSearchResults: (results) => set({ searchResults: results }),
@@ -135,8 +137,8 @@ const useAppStore = create((set, get) => ({
     const auth = getAuth();
 
     // onAuthStateChanged는 인증 상태가 변경될 때마다 실행되는 콜백 함수를 등록함
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) =>{
-      if(currentUser){ // 로그인이 되었을 때
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (currentUser) { // 로그인이 되었을 때
         const currentUserInfo = await dbApi.readUserInfo(currentUser.uid);
         const likeLists = await dbApi.getReviewLikes(currentUser.uid);
         const filmLists = await dbApi.getUserFilm(currentUser.uid);
@@ -144,12 +146,12 @@ const useAppStore = create((set, get) => ({
         set({
           currentUser,
           currentUserInfo,
-          likes : likeLists || [],
-          films : filmLists || [],
+          likes: likeLists || [],
+          films: filmLists || [],
         });
 
         console.log("로그인된 유저 : ", currentUser.uid);
-      }else { //로그아웃 되었을 때
+      } else { //로그아웃 되었을 때
         set(getResetAuthState());
         console.log("로그아웃 상태");
       }
@@ -184,99 +186,18 @@ const useAppStore = create((set, get) => ({
     await signOut(auth);
   },
 
-  addReview: async (movieReview) => {
-    await dbApi.addDBReview(movieReview);
+  addFilms: async (film) => {
+    await dbApi.addDBList(film);
 
     set((state) => ({
-      movieReviews: [...(state.movieReviews || []), movieReview],
+      films: [...(state.films || []), film],
     }));
   },
-
-  getMovieReview: async (movieId) => {
-    const movieReviews = await dbApi.getDBMovieReview(movieId);
+  getFilms: async (uid) => {
+    const films = await dbApi.getUserFilm(uid);
 
     set(() => ({
-      movieReviews: movieReviews || [],
-    }));
-  },
-
-  getUserReview: async (uid) => {
-    const userReviews = await dbApi.getDBUserReview(uid);
-
-    set(() => ({
-      userReviews: userReviews || [],
-    }));
-  },
-
-  updateReview: async (reviewId, nextData) => {
-  await dbApi.updateDBReview(reviewId, nextData);
-
-  set((state) => ({
-    userReviews: (state.userReviews || []).map((review) =>
-      review.id === reviewId ? { ...review, ...nextData } : review
-    ),
-    movieReviews: (state.movieReviews || []).map((review) =>
-      review.id === reviewId ? { ...review, ...nextData } : review
-    ),
-  }));
-},
-
-deleteReview: async (reviewId) => {
-  await dbApi.deleteDBReview(reviewId);
-
-  set((state) => ({
-    userReviews: (state.userReviews || []).filter(
-      (review) => review.id !== reviewId
-    ),
-    movieReviews: (state.movieReviews || []).filter(
-      (review) => review.id !== reviewId
-    ),
-  }));
-},
-
-  addReviewLike: async (currentLiked, likedMovie, uid, movieId) => {
-    await dbApi.addDBReviewLike(currentLiked, likedMovie, uid, movieId);
-
-    set((state) => {
-      const currentLikes = state.likes || [];
-      const targetMovieId = String(movieId);
-      const exists = currentLikes.some(
-        (item) => item.uid === uid && String(item.movieId) === targetMovieId
-      );
-
-      return {
-        likes: exists
-          ? currentLikes.filter(
-              (item) =>
-                !(item.uid === uid && String(item.movieId) === targetMovieId)
-            )
-          : [...currentLikes, likedMovie],
-      };
-    });
-  },
-
-  checkReviewLike: async (uid, movieId) => {
-    const result = await dbApi.checkDBReviewLike(uid, movieId);
-    return !!result;
-  },
-  // addReviewLike : async(reviewLiked,liked,uid,movieId) => {
-  //    const newLiked = await dbApi.addDBReviewLike(reviewLiked,liked,uid,movieId);
-
-  //    set(() => ({
-  //     reviewLiked : newLiked
-  //    }))
-  // },
-  // checkReviewLike : async (uid,movieId) => {
-  //   const result = await dbApi.checkDBReviewLike(uid, movieId);
-
-  //   set({ reviewLiked: result });
-  // },
-
-  addList: async (list) => {
-    await dbApi.addDBList(list);
-
-    set((state) => ({
-      lists: [...(state.lists || []), list],
+      films: films || [],
     }));
   },
 
@@ -322,10 +243,160 @@ deleteReview: async (reviewId) => {
         ...nextWatchList[targetIndex],
         watchList: exists
           ? currentUserWatchList.filter(
-              (item) => String(item.movieId) !== movieId
-            )
+            (item) => String(item.movieId) !== movieId
+          )
           : [...currentUserWatchList, movieData],
       };
+
+      return { watchList: nextWatchList };
+    });
+  },
+  toggleWatch: async (toggleWatchBoolen, newFilm) => {
+    const toggle = await dbApi.addUserFilm(toggleWatchBoolen, newFilm);
+
+    set(() => ({
+      toggleWatchBoolen: toggle
+    }));
+  },
+  checkToggleWatch: async (uid, movieId) => {
+    const result = await dbApi.checkToggleFilm(uid, movieId);
+    set({ toggleWatchBoolen: result });
+  },
+
+  addReview: async (movieReview) => {
+    await dbApi.addDBReview(movieReview);
+
+    set((state) => ({
+      movieReviews: [...(state.movieReviews || []), movieReview],
+    }));
+  },
+  getMovieReview: async (movieId) => {
+    const movieReviews = await dbApi.getDBMovieReview(movieId);
+
+    set(() => ({
+      movieReviews: movieReviews || [],
+    }));
+  },
+  getUserReview: async (uid) => {
+    const userReviews = await dbApi.getDBUserReview(uid);
+
+    set(() => ({
+      userReviews: userReviews || [],
+    }));
+  },
+  updateReview: async (reviewId, nextData) => {
+    await dbApi.updateDBReview(reviewId, nextData);
+
+    set((state) => ({
+      userReviews: (state.userReviews || []).map((review) =>
+        review.id === reviewId ? { ...review, ...nextData } : review
+      ),
+      movieReviews: (state.movieReviews || []).map((review) =>
+        review.id === reviewId ? { ...review, ...nextData } : review
+      ),
+    }));
+  },
+  deleteReview: async (reviewId) => {
+    await dbApi.deleteDBReview(reviewId);
+
+    set((state) => ({
+      userReviews: (state.userReviews || []).filter(
+        (review) => review.id !== reviewId
+      ),
+      movieReviews: (state.movieReviews || []).filter(
+        (review) => review.id !== reviewId
+      ),
+    }));
+  },
+  addReviewLike: async (currentLiked, likedMovie, uid, movieId) => {
+    await dbApi.addDBReviewLike(currentLiked, likedMovie, uid, movieId);
+
+    set((state) => {
+      const currentLikes = state.likes || [];
+      const targetMovieId = String(movieId);
+      const exists = currentLikes.some(
+        (item) => item.uid === uid && String(item.movieId) === targetMovieId
+      );
+
+      return {
+        likes: exists
+          ? currentLikes.filter(
+            (item) =>
+              !(item.uid === uid && String(item.movieId) === targetMovieId)
+          )
+          : [...currentLikes, likedMovie],
+      };
+    });
+  },
+  checkReviewLike: async (uid, movieId) => {
+    const result = await dbApi.checkDBReviewLike(uid, movieId);
+    return !!result;
+  },
+  // addReviewLike : async(reviewLiked,liked,uid,movieId) => {
+  //    const newLiked = await dbApi.addDBReviewLike(reviewLiked,liked,uid,movieId);
+
+  //    set(() => ({
+  //     reviewLiked : newLiked
+  //    }))
+  // },
+  // checkReviewLike : async (uid,movieId) => {
+  //   const result = await dbApi.checkDBReviewLike(uid, movieId);
+
+  //   set({ reviewLiked: result });
+  // },
+
+  addWatchList: async (watchList) => {
+    await dbApi.addDBList(watchList);
+
+    set((state) => ({
+      watchList: [...(state.watchList || []), watchList],
+    }));
+  },
+  getWatchList: async (uid) => {
+    const watchList = await dbApi.getDBUserLists(uid);
+
+    set(() => ({
+      watchList: watchList || [],
+    }));
+  },
+
+  addList: async (list) => {
+    await dbApi.addDBList(list);
+
+    set((state) => ({
+      lists: [...(state.lists || []), list],
+    }));
+  },
+  getUserLists: async (uid) => {
+    const userLists = await dbApi.getDBUserLists(uid);
+
+    set(() => ({
+      lists: userLists || [],
+    }));
+  },
+  getAllLists: async () => {
+    const allLists = await dbApi.getDBAllLists();
+
+    set(() => ({
+      allLists: allLists || [],
+    }));
+  },
+
+  addLikes: async (like) => {
+    await dbApi.addDBList(like);
+
+    set((state) => ({
+      likes: [...(state.likes || []), like],
+    }));
+  },
+  getLikes: async (uid) => {
+    const userLikes = await dbApi.getDBUserLists(uid);
+
+    set(() => ({
+      Likes: userLikes || [],
+    }));
+  },
+
 
       return { watchList: nextWatchList };
     });

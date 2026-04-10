@@ -7,9 +7,7 @@ const UserFilms = () => {
   const { id } = useParams();
   // const loginUser = useAppStore((state) => state.currentUser);
   const [userInfo, setUserInfo] = useState(null);
-  const films = useAppStore((state) => state.films).filter(
-    (film) => film?.uid === id
-  );
+  const films = useAppStore((state) => state.films);
   
   if (films.length === 0) {
     return (

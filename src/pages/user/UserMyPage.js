@@ -6,6 +6,14 @@ import { auth } from "db/firebase";
 
 const UserMyPage = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  
+  // const loginUser = auth.currentUser;
+  // useEffect(() => {
+  //   if (!loginUser) {
+  //     navigate("/login");
+  //   }
+  // }, [loginUser]);
 
   const navigate = useNavigate();
   const loginUser = auth.currentUser;

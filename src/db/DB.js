@@ -8,6 +8,7 @@ const dbApi = {
         try{
             await createUserWithEmailAndPassword(auth, user.email, user.pwd);
             const newUser = {
+                    email: user.email,
                     name: user.name, 
                     birth: user.birth,
                     phone: user.phone
@@ -15,7 +16,6 @@ const dbApi = {
             //회원가입 한 정보를 기반으로 uid로 문서를 만든후 user정보를 삽입함.
             await setDoc(doc(db, "users", auth.currentUser.uid), newUser);
 
-            alert("회원가입 완료");
             return 1;
         }catch(e){
             //회원가입시 발생하는 오류 코드
@@ -43,54 +43,49 @@ const dbApi = {
     },
 
     readUserInfo: async (uid) => {
+        if (!uid) return null; // uid가 없으면 바로 리턴
         const userDocRef = doc(db, "users", uid);
         const userSnapshot = await getDoc(userDocRef);
         return userSnapshot.data();
     },
-
     updateUserInfo: async (uid, userInfo) => {
         const userDocRef = doc(db, "users", uid);
         await updateDoc(userDocRef, userInfo);
     },
 
-    addDBReviewLike : async(reviewLiked,liked,uid,movieId) => {
-        const docRef = doc(db, "likes", `${uid}_${movieId}`);
+    // Film
+    addUserFilm : async(toggle, newFilm) => {
+        const docRef = doc(db, "films", `${newFilm.uid}_${newFilm.movieId}`);
         
-        if (reviewLiked) {
+        if (toggle) {
             await deleteDoc(docRef); // 취소
             return false;
         } else {
-            await setDoc(docRef, liked);
+            await setDoc(docRef, newFilm);
             return true;
         }
     },
-    checkDBReviewLike : async(uid, movieId) => {
-        const docId = `${uid}_${movieId}`;
-        const likeRef = doc(db, "likes", docId);
-
-        const snap = await getDoc(likeRef);
-
-        return snap.exists();
-    },
-
-    getReviewLikes : async(uid) => {
+    getUserFilm : async(uid) => {
         const q = query(
-            collection(db, "likes"),
+            collection(db, "films"),
             where("uid", "==", uid)
         );
-        const likeList = await getDocs(q);
 
-        const lists = likeList.docs.map(doc => doc.data());
-    
-        return lists;
+        const userFilm = await getDocs(q);
+
+        const docItems = Array();
+
+        userFilm.docs.map(doc => docItems.push(doc.data()));
+
+        return docItems;
     },
 
+    // Review
     addDBReview : async(newReview) =>{
         const reviewRef = collection(db, "reviews");
 
         await addDoc(reviewRef , newReview);
     },
-
     getDBMovieReview : async(movieId) => {
         const id = String(movieId);
         const q = query(
@@ -103,7 +98,6 @@ const dbApi = {
 
         return reviewList.docs.map(doc => doc.data());
     },
-
     getDBUserReview : async(uid) => {
             const q = query(
             collection(db, "reviews"),
@@ -119,11 +113,120 @@ const dbApi = {
 
         return docItems;
     },
-
-    addDBList : async(newList) =>{
-        // const listRef = collection(db, "lists");
+    addDBReviewLike : async(reviewLiked,liked,uid,movieId) => {
+        const docRef = doc(db, "likes", `${uid}_${movieId}`);
         
-        // await addDoc(listRef , newList);
+        if (reviewLiked) {
+            await deleteDoc(docRef); // 취소
+            return false;
+        } else {
+            await setDoc(docRef, liked);
+            return true;
+        }
+    },
+    getReviewLikes : async(uid) => {
+        const q = query(
+            collection(db, "likes"),
+            where("uid", "==", uid)
+        );
+        const likeList = await getDocs(q);
+
+        const lists = likeList.docs.map(doc => doc.data());
+    
+        return lists;
+    },
+    checkDBReviewLike : async(uid, movieId) => {
+        const docId = `${uid}_${movieId}`;
+        const likeRef = doc(db, "likes", docId);
+
+        const snap = await getDoc(likeRef);
+
+        return snap.exists();
+    },
+
+    // WatchList
+    addDBWatchList : async(watch) =>{
+        const listRef = collection(db, "watchlist");
+        
+        await addDoc(listRef , watch);
+    },
+    getDBWatchLists: async(uid) => {
+        const q = query(
+            collection(db, "watchlist"),
+            where("uid", "==", uid),
+        );
+
+        const watchlists = await getDocs(q);
+
+        const docItems = Array();
+
+        watchlists.docs.map(doc => docItems.push(doc.data()));
+
+        return docItems;
+    },
+
+    // Lists
+    addDBList : async(newList) =>{
+        const listRef = collection(db, "lists");
+        
+        await addDoc(listRef , newList);
+    },
+    getDBUserLists: async(uid) => {
+        const q = query(
+            collection(db, "lists"),
+            where("uid", "==", uid),
+        );
+
+        const lists = await getDocs(q);
+
+        const docItems = Array();
+
+        lists.docs.map(doc => docItems.push(doc.data()));
+
+        return docItems;
+    },
+    getDBAllLists: async() => {
+        const q = query(
+            collection(db, "lists")
+        );
+
+        const lists = await getDocs(q);
+
+        const docItems = Array();
+
+        lists.docs.map(doc => docItems.push(doc.data()));
+
+        return docItems;
+    },
+
+    // Likes
+    addDBLikes : async(newLike) =>{
+        const listRef = collection(db, "likes");
+        
+        await addDoc(listRef , newLike);
+    },
+    getDBLikes: async(uid) => {
+        const q = query(
+            collection(db, "likes"),
+            where("uid", "==", uid),
+        );
+
+        const likes = await getDocs(q);
+
+        const docItems = Array();
+
+        likes.docs.map(doc => docItems.push(doc.data()));
+
+        return docItems;
+    },
+
+    checkToggleFilm : async(uid, movieId) =>{
+        const docId = `${uid}_${movieId}`;
+        const ref = doc(db, "films", docId);
+
+        const snap = await getDoc(ref);
+
+        return snap.exists();
     },
 
     addUserFilm : async(toggle, newFilm) => {

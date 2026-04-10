@@ -1,18 +1,23 @@
-import React from "react";
+import React, { useEffect } from "react";
 import useAppStore from "store/useAppStore";
 // import "./UserLists.css";
 import { Link } from "react-router-dom";
 
 const Lists = () => {
-    const lists = useAppStore((state) => state.lists)
+    const getAllLists = useAppStore((state) => state.getAllLists);
+    const allLists = useAppStore((state) => state.allLists);
 
     const getListId = (list, index) =>
         list.id || `${list.uid}-${index}-${list.title}`;
 
+    useEffect(() => {
+      getAllLists();
+    }, [getAllLists]);
+
     return (
         <div className="user-lists-grid">
 
-          {lists.map((list, index) => (
+          {allLists?.map((list, index) => (
             <article className="user-list-card" key={getListId(list, index)}>
               <div className="user-list-header">
                 <span><Link to={'/user/profile/'+list.uid}>{list.writer}</Link></span>
