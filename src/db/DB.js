@@ -16,7 +16,6 @@ const dbApi = {
             //회원가입 한 정보를 기반으로 uid로 문서를 만든후 user정보를 삽입함.
             await setDoc(doc(db, "users", auth.currentUser.uid), newUser);
 
-            alert("회원가입 완료");
             return 1;
         }catch(e){
             //회원가입시 발생하는 오류 코드
@@ -160,6 +159,107 @@ const dbApi = {
         const snap = await getDoc(ref);
 
         return snap.exists();
+    },
+
+    addUserWatchLater : async(uid, movie) => {
+        const q = query(
+            collection(db, "watchList"),
+            where("uid", "==", uid)
+        );
+
+        const snap = await getDocs(q);
+
+        // 문서 없으면 생성
+        if (snap.empty) {
+            await addDoc(collection(db, "watchList"), {
+            uid,
+            watchList: [
+                {
+                    movieId: String(movie.id),
+                    poster_path: movie.poster_path,
+                    title : movie.title,
+                    release_date : movie.release_date
+                },
+            ],
+            });
+            return true; // 추가됨
+        }
+
+        // 문서 있으면 업데이트
+        const docRef = snap.docs[0].ref;
+        const data = snap.docs[0].data();
+
+        const currentList = data.watchList || [];
+
+        const exists = currentList.some(
+            (item) => String(item.movieId) === String(movie.id)
+        );
+
+        let newList;
+
+        if (exists) {
+            // 삭제
+            newList = currentList.filter(
+            (item) => String(item.movieId) !== String(movie.id)
+            );
+        } else {
+            // 추가
+            newList = [
+            ...currentList,
+            {
+                movieId: String(movie.id),
+                poster_path: movie.poster_path,
+                title : movie.title,
+                release_date : movie.release_date
+            },
+            ];
+        }
+
+        await updateDoc(docRef, {
+            watchList: newList,
+        });
+
+        return !exists; // 현재 상태 (true면 추가됨)
+    },
+    checkToggleWatchLater : async(uid , movieId) => {
+        const q = query(
+            collection(db, "watchList"),
+            where("uid", "==", uid)
+        );
+
+        const snap = await getDocs(q);
+
+        // 문서 없음
+        if (snap.empty) return false;
+
+        // 배열에서 movieId 찾기
+        const data = snap.docs[0].data();
+
+        const exists = (data.watchList || []).some(
+        (item) => String(item.movieId) === String(movieId)
+        );
+
+        return exists;
+
+        
+    },
+
+    getToggleWatchLater : async(uid) => {
+        const q = query(
+            collection(db, "watchList"),
+            where("uid", "==", uid)
+        );
+
+        const snap = await getDocs(q);
+
+        if (snap.empty) return false;
+
+        const data = snap.docs[0].data();
+
+        const newData = Array();
+        newData.push(data)
+
+        return newData;
     },
 }
 

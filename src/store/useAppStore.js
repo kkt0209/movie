@@ -100,10 +100,12 @@ const getResetAuthState = () => ({
   reviewLiked : false,
   userReviews : [],
   toggleWatchBoolen : false,
+  toggleWatcgLaterBoolean : false,
   films : [],
   watchList : [],
   lists : [],
   userReviews: null,
+  likes : [],
 });
 
 const useAppStore = create((set, get) => ({
@@ -117,7 +119,8 @@ const useAppStore = create((set, get) => ({
   lists: [],
   likes: [],
   reviewLiked: false,
-  toggleWatchBoolen : false,
+  toggleWatchBoolean : false,
+  toggleWatchLaterBoolean : false,
 
   // searchResults: [],
   // setSearchResults: (results) => set({ searchResults: results }),
@@ -130,6 +133,8 @@ const useAppStore = create((set, get) => ({
 
   setReviewLiked: (value) => set({ reviewLiked: value }),
 
+  setToggleWatchLaterBoolean : (value) => set({toggleWatchLaterBoolean : value}),
+
 
   initApp: () => {
     const auth = getAuth();
@@ -140,12 +145,14 @@ const useAppStore = create((set, get) => ({
         const currentUserInfo = await dbApi.readUserInfo(currentUser.uid);
         const likeLists = await dbApi.getReviewLikes(currentUser.uid);
         const filmLists = await dbApi.getUserFilm(currentUser.uid);
+        const watchlists = await dbApi.getToggleWatchLater(currentUser.uid);
 
         set({
           currentUser,
           currentUserInfo,
           likes : likeLists || [],
           films : filmLists || [],
+          watchList : watchlists || [],
         });
 
         console.log("로그인된 유저 : ", currentUser.uid);
@@ -209,30 +216,30 @@ const useAppStore = create((set, get) => ({
   },
 
   updateReview: async (reviewId, nextData) => {
-  await dbApi.updateDBReview(reviewId, nextData);
+    await dbApi.updateDBReview(reviewId, nextData);
 
-  set((state) => ({
-    userReviews: (state.userReviews || []).map((review) =>
-      review.id === reviewId ? { ...review, ...nextData } : review
-    ),
-    movieReviews: (state.movieReviews || []).map((review) =>
-      review.id === reviewId ? { ...review, ...nextData } : review
-    ),
-  }));
-},
+    set((state) => ({
+      userReviews: (state.userReviews || []).map((review) =>
+        review.id === reviewId ? { ...review, ...nextData } : review
+      ),
+      movieReviews: (state.movieReviews || []).map((review) =>
+        review.id === reviewId ? { ...review, ...nextData } : review
+      ),
+    }));
+  },
 
-deleteReview: async (reviewId) => {
-  await dbApi.deleteDBReview(reviewId);
+  deleteReview: async (reviewId) => {
+    await dbApi.deleteDBReview(reviewId);
 
-  set((state) => ({
-    userReviews: (state.userReviews || []).filter(
-      (review) => review.id !== reviewId
-    ),
-    movieReviews: (state.movieReviews || []).filter(
-      (review) => review.id !== reviewId
-    ),
-  }));
-},
+    set((state) => ({
+      userReviews: (state.userReviews || []).filter(
+        (review) => review.id !== reviewId
+      ),
+      movieReviews: (state.movieReviews || []).filter(
+        (review) => review.id !== reviewId
+      ),
+    }));
+  },
 
   addReviewLike: async (currentLiked, likedMovie, uid, movieId) => {
     await dbApi.addDBReviewLike(currentLiked, likedMovie, uid, movieId);
@@ -257,7 +264,7 @@ deleteReview: async (reviewId) => {
 
   checkReviewLike: async (uid, movieId) => {
     const result = await dbApi.checkDBReviewLike(uid, movieId);
-    return !!result;
+    set({reviewLiked : result});
   },
   // addReviewLike : async(reviewLiked,liked,uid,movieId) => {
   //    const newLiked = await dbApi.addDBReviewLike(reviewLiked,liked,uid,movieId);
@@ -280,67 +287,88 @@ deleteReview: async (reviewId) => {
     }));
   },
 
-  toggleWatchLater: (movie) => {
-    const user = get().currentUser;
-    if (!user) return;
+  toggleWatchLater: async(uid,movie) => {
+    
+    await dbApi.addUserWatchLater(uid, movie);
 
-    const movieId = String(movie.movieId || movie.id);
+    const result = await dbApi.checkToggleWatchLater(uid, movie.id);
 
-    set((state) => {
-      const safeWatchList = state.watchList || [];
-      const targetIndex = safeWatchList.findIndex(
-        (item) => item.uid === user.uid
-      );
+    set({ toggleWatchLaterBoolean: result });
 
-      const movieData = {
-        movieId,
-        poster_path: movie.poster_path,
-        title: movie.title,
-        release_date: movie.release_date,
-      };
+    // const user = get().currentUser;
+    // if (!user) return;
 
-      if (targetIndex === -1) {
-        return {
-          watchList: [
-            ...safeWatchList,
-            {
-              uid: user.uid,
-              watchList: [movieData],
-            },
-          ],
-        };
-      }
+    // const movieId = String(movie.movieId || movie.id);
 
-      const nextWatchList = [...safeWatchList];
-      const currentUserWatchList = nextWatchList[targetIndex].watchList || [];
+    // set((state) => {
+    //   const safeWatchList = state.watchList || [];
+    //   const targetIndex = safeWatchList.findIndex(
+    //     (item) => item.uid === user.uid
+    //   );
 
-      const exists = currentUserWatchList.some(
-        (item) => String(item.movieId) === movieId
-      );
+    //   const movieData = {
+    //     movieId,
+    //     poster_path: movie.poster_path,
+    //     title: movie.title,
+    //     release_date: movie.release_date,
+    //   };
 
-      nextWatchList[targetIndex] = {
-        ...nextWatchList[targetIndex],
-        watchList: exists
-          ? currentUserWatchList.filter(
-              (item) => String(item.movieId) !== movieId
-            )
-          : [...currentUserWatchList, movieData],
-      };
+    //   if (targetIndex === -1) {
+    //     return {
+    //       watchList: [
+    //         ...safeWatchList,
+    //         {
+    //           uid: user.uid,
+    //           watchList: [movieData],
+    //         },
+    //       ],
+    //     };
+    //   }
 
-      return { watchList: nextWatchList };
-    });
+    //   const nextWatchList = [...safeWatchList];
+    //   const currentUserWatchList = nextWatchList[targetIndex].watchList || [];
+
+    //   const exists = currentUserWatchList.some(
+    //     (item) => String(item.movieId) === movieId
+    //   );
+
+    //   nextWatchList[targetIndex] = {
+    //     ...nextWatchList[targetIndex],
+    //     watchList: exists
+    //       ? currentUserWatchList.filter(
+    //           (item) => String(item.movieId) !== movieId
+    //         )
+    //       : [...currentUserWatchList, movieData],
+    //   };
+
+    //   return { watchList: nextWatchList };
+    // });
   },
-  toggleWatch : async (toggleWatchBoolen, newFilm) => {
-    const toggle = await dbApi.addUserFilm(toggleWatchBoolen, newFilm);
+  checkToggleWatchLater : async (uid, movieId) => {
+    const result = await dbApi.checkToggleWatchLater(uid, movieId);
+
+    set({toggleWatcgLaterBoolean : result});
+  },
+
+  // getToggleWatchLater : async ( uid ) => {
+  //   const result = await dbApi.getToggleWatchLater(uid);
+
+  //   set({watchList : result});
+  // },
+
+  toggleWatch : async (toggleWatchBoolean, newFilm) => {
+    const toggle = await dbApi.addUserFilm(toggleWatchBoolean, newFilm);
 
     set(() => ({
-      toggleWatchBoolen : toggle
+      toggleWatchBoolean : toggle
     }));
   },
   checkToggleWatch : async( uid , movieId ) => {
     const result = await dbApi.checkToggleFilm(uid, movieId);
-    set({ toggleWatchBoolen: result });
-  }
+    
+    set({ toggleWatchBoolean: result });
+  },
+  
 
 }));
 
