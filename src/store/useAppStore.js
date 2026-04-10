@@ -126,6 +126,14 @@ const useAppStore = create((set, get) => ({
 
   setCurrentUser: (loginUser) => set({ currentUser: loginUser }),
   setCurrentUserInfo: (loginUser) => set({ currentUserInfo: loginUser }),
+  resetUserPageData: () =>
+    set({
+      userReviews: [],
+      films: [],
+      watchList: [],
+      lists: [],
+      likes: [],
+    }),
 
   searchResults: [], // 검색 결과를 담을 배열
   setSearchResults: (results) => set({ searchResults: results }),
@@ -309,28 +317,27 @@ const useAppStore = create((set, get) => ({
     }));
   },
   addReviewLike: async (currentLiked, likedMovie, uid, movieId) => {
-    await dbApi.addDBReviewLike(currentLiked, likedMovie, uid, movieId);
+    // DB 업데이트
+    const result = await dbApi.addDBReviewLike(currentLiked, likedMovie, uid, movieId);
 
     set((state) => {
       const currentLikes = state.likes || [];
       const targetMovieId = String(movieId);
-      const exists = currentLikes.some(
-        (item) => item.uid === uid && String(item.movieId) === targetMovieId
-      );
-
+      
+      // UI 상태도 결과값(toggle 결과)에 맞춰 업데이트
       return {
-        likes: exists
-          ? currentLikes.filter(
-            (item) =>
-              !(item.uid === uid && String(item.movieId) === targetMovieId)
-          )
-          : [...currentLikes, likedMovie],
+        reviewLiked: result, // result가 true(추가됨) 또는 false(삭제됨)를 반환해야 함
+        likes: !currentLiked // 현재 상태가 '좋아요'였다면 삭제, 아니었다면 추가
+          ? [...currentLikes, likedMovie]
+          : currentLikes.filter(item => String(item.movieId) !== targetMovieId)
       };
     });
   },
   checkReviewLike: async (uid, movieId) => {
+    if (!uid) return;
     const result = await dbApi.checkDBReviewLike(uid, movieId);
-    return !!result;
+    // 단순히 return만 하지 말고 set으로 상태를 저장해야 함
+    set({ reviewLiked: !!result });
   },
   // addReviewLike : async(reviewLiked,liked,uid,movieId) => {
   //    const newLiked = await dbApi.addDBReviewLike(reviewLiked,liked,uid,movieId);
@@ -390,10 +397,10 @@ const useAppStore = create((set, get) => ({
     }));
   },
   getLikes: async (uid) => {
-    const userLikes = await dbApi.getDBUserLists(uid);
+    const userLikes = await dbApi.getDBLikes(uid);
 
     set(() => ({
-      Likes: userLikes || [],
+      likes: userLikes || [],
     }));
   },
 }));

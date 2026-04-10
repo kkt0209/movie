@@ -1,22 +1,32 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import useAppStore from "store/useAppStore";
 import "./UserLikes.css";
 
 const UserLikes = () => {
   const { id } = useParams();
+  const likes = useAppStore((state) => state.likes); // 스토어의 likes 상태
+  const getLikes = useAppStore((state) => state.getLikes); // 데이터를 가져오는 액션
+
+  useEffect(() => {
+    if (id) {
+      // 페이지에 들어올 때마다 해당 유저의 좋아요 데이터를 다시 불러옴
+      getLikes(id);
+    }
+  }, [id, getLikes]);
+
   // const loginUser = useAppStore((state) => state.currentUser);
   const [activeTab, setActiveTab] = useState("movies")
 
-  const movielikes = useAppStore((state) => state.likes).filter(
+  const movielikes = likes.filter(
     (like) => like?.uid === id
   );
 
-  const reviewlikes = useAppStore((state) => state.likes).filter(
+  const reviewlikes = likes.filter(
     (like) => like?.uid === id
   );
 
-  const listlikes = useAppStore((state) => state.likes).filter(
+  const listlikes = likes.filter(
     (like) => like?.uid === id
   );
 
@@ -34,21 +44,21 @@ const UserLikes = () => {
 
       <div className="user-likes-tabs">
         <button 
-          className={'user-likes-tab ${activeTab === "movies" ? "active" : ""}'}
+          className={`user-likes-tab ${activeTab === "movies" ? "active" : ""}`}
           onClick={() =>setActiveTab("movies")}
           >
             영화
         </button>
 
         <button 
-          className={'user-likes-tab ${activeTab === "reviews" ? "active" : ""}'}
+          className={`user-likes-tab ${activeTab === "reviews" ? "active" : ""}`}
           onClick={() =>setActiveTab("reviews")}
           >
             리뷰
         </button>
 
         <button 
-          className={'user-likes-tab ${activeTab === "lists" ? "active" : ""}'}
+          className={`user-likes-tab ${activeTab === "lists" ? "active" : ""}`}
           onClick={() =>setActiveTab("lists")}
           >
             리스트
@@ -66,7 +76,7 @@ const UserLikes = () => {
             {movielikes.map((like) =>(
               <article className="user-likes-card" key={like.movieId}>
                 <Link
-                  to={'/movie/${like.movieID}'}
+                  to={`/movie/${like.movieId}`}
                   className="user-like-poster-link"
                   >
                     <img

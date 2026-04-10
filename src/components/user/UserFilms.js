@@ -1,12 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import React from "react";
+import { Link } from "react-router-dom";
 import useAppStore from "store/useAppStore";
 import "./UserFilms.css";
 
 const UserFilms = () => {
-  const { id } = useParams();
-  // const loginUser = useAppStore((state) => state.currentUser);
-  const [userInfo, setUserInfo] = useState(null);
   const films = useAppStore((state) => state.films);
   
   if (films.length === 0) {

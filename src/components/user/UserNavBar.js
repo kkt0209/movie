@@ -49,16 +49,26 @@ const UserNavbar = () => {
   const getWatchList = useAppStore((state) => state.getWatchList);
   const getUserLists = useAppStore((state) => state.getUserLists);
   const getLikes = useAppStore((state) => state.getLikes);
+  const resetUserPageData = useAppStore((state) => state.resetUserPageData);
 
   useEffect(() => {
     if (targetUserId) {
+      resetUserPageData();
       getFilms(targetUserId);
       getUserReview(targetUserId);
       getWatchList(targetUserId);
       getUserLists(targetUserId);
       getLikes(targetUserId);
     }
-  }, [targetUserId, getFilms, getUserReview, getWatchList, getUserLists, getLikes]);
+  }, [
+    targetUserId,
+    resetUserPageData,
+    getFilms,
+    getUserReview,
+    getWatchList,
+    getUserLists,
+    getLikes,
+  ]);
 
   const navItems = [
     { to: `/user/profile/${targetUserId}`, label: "PROFILE" },

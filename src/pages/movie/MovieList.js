@@ -4,6 +4,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 
 const SKELETON_COUNT = 12;
+const LOAD_MORE_DELAY_MS = 450;
 
 const MovieList = () => {
   const API_KEY = process.env.REACT_APP_TMDB_API_KEY;
@@ -25,6 +26,7 @@ const MovieList = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isFetchingMore, setIsFetchingMore] = useState(false);
   const loadMoreRef = useRef(null);
+  const loadMoreTimeoutRef = useRef(null);
   const skeletonItems = Array.from({ length: SKELETON_COUNT }, (_, index) => index);
 
   const GENRES = [
@@ -102,8 +104,16 @@ const MovieList = () => {
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
-          setPage((prev) => prev + 1);
+        if (entry.isIntersecting && !loadMoreTimeoutRef.current) {
+          loadMoreTimeoutRef.current = window.setTimeout(() => {
+            setPage((prev) => prev + 1);
+            loadMoreTimeoutRef.current = null;
+          }, LOAD_MORE_DELAY_MS);
+        }
+
+        if (!entry.isIntersecting && loadMoreTimeoutRef.current) {
+          window.clearTimeout(loadMoreTimeoutRef.current);
+          loadMoreTimeoutRef.current = null;
         }
       },
       { rootMargin: "250px 0px" }
@@ -111,7 +121,13 @@ const MovieList = () => {
 
     observer.observe(target);
 
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      if (loadMoreTimeoutRef.current) {
+        window.clearTimeout(loadMoreTimeoutRef.current);
+        loadMoreTimeoutRef.current = null;
+      }
+    };
   }, [isLoading, isFetchingMore, page, totalPages]);
 
   const handleGenreSelect = (genreId) => {
