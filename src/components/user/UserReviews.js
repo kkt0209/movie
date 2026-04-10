@@ -151,9 +151,6 @@ const UserReviews = () => {
               <div className="user-review-group-body">
                 <div className="user-review-group-header">
                   <h3 className="user-review-group-title">{movie.title}</h3>
-                  <span className="user-review-group-count">
-                    리뷰 {movie.reviews.length}개
-                  </span>
                 </div>
 
                 <div className="user-review-status-list">
@@ -165,18 +162,9 @@ const UserReviews = () => {
                   )}
                   {watchLater && (
                     <span className="user-review-status watchlater">
-                      나중에 볼래
+                      리스트 추가
                     </span>
                   )}
-                </div>
-
-                <div className="user-review-activity-summary">
-                  <div className="user-review-stars">
-                    {renderStars(maxRating)}
-                  </div>
-                  <div className="user-review-summary-text">
-                    내 최고 별점 {maxRating}점 · 평균 {avgRating}점
-                  </div>
                 </div>
 
                 <div className="user-review-preview-list">

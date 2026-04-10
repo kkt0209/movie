@@ -50,6 +50,7 @@ const MovieDetail = () => {
   const [providers, setProviders] = useState([]);
   const [releaseInfo, setReleaseInfo] = useState([]);
   const [collection, setCollection] = useState(null);
+  const [providerLink, setProviderLink] = useState("");
 
   const [rating, setRating] = useState(1);
   const [watched, setWatched] = useState(false);
@@ -66,6 +67,7 @@ const MovieDetail = () => {
     setRating(1);
     setWatched(false);
     setToggleWatchLaterBoolean(false);
+    setProviderLink("");
 
     window.scrollTo(0, 0);
 
@@ -92,6 +94,7 @@ const MovieDetail = () => {
         if (isMounted) {
           const kr = response.data.results?.KR;
           setProviders(kr?.flatrate || []);
+          setProviderLink(kr?.link || "");
         }
       })
       .catch((error) => {
@@ -119,6 +122,8 @@ const MovieDetail = () => {
       isMounted = false;
     };
   }, [id, API_KEY]);
+
+  
 
   useEffect(() => {
     setRecommendIndex(0);
@@ -348,6 +353,7 @@ const MovieDetail = () => {
         onToggleWatchLater={handleToggleWatchLater}
         rating={rating}
         onChangeRating={setRating}
+        providerLink={providerLink}
       />
 
       <div className="detail-bottom">

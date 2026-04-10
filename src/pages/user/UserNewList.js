@@ -3,12 +3,14 @@ import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useAppStore from "store/useAppStore";
 import "./UserNewList.css";
+import dbApi from "db/DB";
 
 const UserNewList = () => {
   const API_KEY = process.env.REACT_APP_TMDB_API_KEY;
   const navigate = useNavigate();
 
   const loginUser = useAppStore((state) => state.currentUser);
+  const [userInfo, setUserInfo] = useState(null);
   const addList = useAppStore((state) => state.addList);
 
   const [searchTitle, setSearchTitle] = useState("");
@@ -19,6 +21,16 @@ const UserNewList = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   const searchAreaRef = useRef(null);
+
+  useEffect(() => {
+    const getUserData = async () => {
+      if (loginUser?.uid) {
+        const data = await dbApi.readUserInfo(loginUser.uid);
+        setUserInfo(data);
+      }
+    };
+    getUserData();
+  }, [loginUser?.uid, dbApi.readUserInfo]);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -92,6 +104,7 @@ const UserNewList = () => {
     const newList = {
       id: Date.now().toString(),
       uid: loginUser.uid,
+      writer: userInfo.name,
       title: title,
       desc: desc,
       lists: userLists,

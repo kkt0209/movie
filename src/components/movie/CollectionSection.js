@@ -1,10 +1,22 @@
 import React, { useRef } from "react";
 import { Link } from "react-router-dom";
 
-const CollectionSection = ({ collection, collectionMovies }) => {
+const CollectionSection = ({
+  collection,
+  collectionMovies,
+  currentMovieId,
+}) => {
   const listRef = useRef(null);
 
   if (!collection || collectionMovies.length === 0) {
+    return null;
+  }
+
+  const filteredMovies = collectionMovies.filter(
+    (item) => String(item.id) !== String(currentMovieId)
+  );
+
+  if (filteredMovies.length === 0) {
     return null;
   }
 
@@ -48,13 +60,14 @@ const CollectionSection = ({ collection, collectionMovies }) => {
       </div>
 
       <div className="collection-list" ref={listRef}>
-        {collectionMovies.map((item) => (
+        {filteredMovies.map((item) => (
           <Link
             to={`/movie/${item.id}`}
             key={item.id}
             className="collection-item"
           >
             <img
+              loading="lazy"
               src={
                 item.poster_path
                   ? `https://image.tmdb.org/t/p/w200${item.poster_path}`
@@ -62,6 +75,7 @@ const CollectionSection = ({ collection, collectionMovies }) => {
               }
               alt={item.title}
             />
+            <p className="collection-item-title">{item.title}</p>
           </Link>
         ))}
       </div>

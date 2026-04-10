@@ -106,17 +106,20 @@ const getResetAuthState = () => ({
   lists : [],
   userReviews: null,
   likes : [],
+  allLists: [],
 });
 
 const useAppStore = create((set, get) => ({
   currentUser: null,
   currentUserInfo: null,
-  
+
   movieReviews: [],
   userReviews: [],
   films: [],
+  // reviews: [],
   watchList: [],
   lists: [],
+  allLists: [],
   likes: [],
   reviewLiked: false,
   toggleWatchBoolean : false,
@@ -140,8 +143,8 @@ const useAppStore = create((set, get) => ({
     const auth = getAuth();
 
     // onAuthStateChanged는 인증 상태가 변경될 때마다 실행되는 콜백 함수를 등록함
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) =>{
-      if(currentUser){ // 로그인이 되었을 때
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (currentUser) { // 로그인이 되었을 때
         const currentUserInfo = await dbApi.readUserInfo(currentUser.uid);
         const likeLists = await dbApi.getReviewLikes(currentUser.uid);
         const filmLists = await dbApi.getUserFilm(currentUser.uid);
@@ -156,7 +159,7 @@ const useAppStore = create((set, get) => ({
         });
 
         console.log("로그인된 유저 : ", currentUser.uid);
-      }else { //로그아웃 되었을 때
+      } else { //로그아웃 되었을 때
         set(getResetAuthState());
         console.log("로그아웃 상태");
       }
@@ -191,6 +194,83 @@ const useAppStore = create((set, get) => ({
     await signOut(auth);
   },
 
+  addFilms: async (film) => {
+    await dbApi.addDBList(film);
+
+    set((state) => ({
+      films: [...(state.films || []), film],
+    }));
+  },
+  getFilms: async (uid) => {
+    const films = await dbApi.getUserFilm(uid);
+
+    set(() => ({
+      films: films || [],
+    }));
+  },
+
+  toggleWatchLater: (movie) => {
+    const user = get().currentUser;
+    if (!user) return;
+
+    const movieId = String(movie.movieId || movie.id);
+
+    set((state) => {
+      const safeWatchList = state.watchList || [];
+      const targetIndex = safeWatchList.findIndex(
+        (item) => item.uid === user.uid
+      );
+
+      const movieData = {
+        movieId,
+        poster_path: movie.poster_path,
+        title: movie.title,
+        release_date: movie.release_date,
+      };
+
+      if (targetIndex === -1) {
+        return {
+          watchList: [
+            ...safeWatchList,
+            {
+              uid: user.uid,
+              watchList: [movieData],
+            },
+          ],
+        };
+      }
+
+      const nextWatchList = [...safeWatchList];
+      const currentUserWatchList = nextWatchList[targetIndex].watchList || [];
+
+      const exists = currentUserWatchList.some(
+        (item) => String(item.movieId) === movieId
+      );
+
+      nextWatchList[targetIndex] = {
+        ...nextWatchList[targetIndex],
+        watchList: exists
+          ? currentUserWatchList.filter(
+            (item) => String(item.movieId) !== movieId
+          )
+          : [...currentUserWatchList, movieData],
+      };
+
+      return { watchList: nextWatchList };
+    });
+  },
+  toggleWatch: async (toggleWatchBoolen, newFilm) => {
+    const toggle = await dbApi.addUserFilm(toggleWatchBoolen, newFilm);
+
+    set(() => ({
+      toggleWatchBoolen: toggle
+    }));
+  },
+  checkToggleWatch: async (uid, movieId) => {
+    const result = await dbApi.checkToggleFilm(uid, movieId);
+    set({ toggleWatchBoolen: result });
+  },
+
   addReview: async (movieReview) => {
     await dbApi.addDBReview(movieReview);
 
@@ -198,7 +278,6 @@ const useAppStore = create((set, get) => ({
       movieReviews: [...(state.movieReviews || []), movieReview],
     }));
   },
-
   getMovieReview: async (movieId) => {
     const movieReviews = await dbApi.getDBMovieReview(movieId);
 
@@ -206,7 +285,6 @@ const useAppStore = create((set, get) => ({
       movieReviews: movieReviews || [],
     }));
   },
-
   getUserReview: async (uid) => {
     const userReviews = await dbApi.getDBUserReview(uid);
 
@@ -214,7 +292,6 @@ const useAppStore = create((set, get) => ({
       userReviews: userReviews || [],
     }));
   },
-
   updateReview: async (reviewId, nextData) => {
     await dbApi.updateDBReview(reviewId, nextData);
 
@@ -227,7 +304,6 @@ const useAppStore = create((set, get) => ({
       ),
     }));
   },
-
   deleteReview: async (reviewId) => {
     await dbApi.deleteDBReview(reviewId);
 
@@ -240,7 +316,6 @@ const useAppStore = create((set, get) => ({
       ),
     }));
   },
-
   addReviewLike: async (currentLiked, likedMovie, uid, movieId) => {
     await dbApi.addDBReviewLike(currentLiked, likedMovie, uid, movieId);
 
@@ -254,14 +329,13 @@ const useAppStore = create((set, get) => ({
       return {
         likes: exists
           ? currentLikes.filter(
-              (item) =>
-                !(item.uid === uid && String(item.movieId) === targetMovieId)
-            )
+            (item) =>
+              !(item.uid === uid && String(item.movieId) === targetMovieId)
+          )
           : [...currentLikes, likedMovie],
       };
     });
   },
-
   checkReviewLike: async (uid, movieId) => {
     const result = await dbApi.checkDBReviewLike(uid, movieId);
     set({reviewLiked : result});
@@ -279,11 +353,17 @@ const useAppStore = create((set, get) => ({
   //   set({ reviewLiked: result });
   // },
 
-  addList: async (list) => {
-    await dbApi.addDBList(list);
+  addWatchList: async (watchList) => {
+    await dbApi.addDBList(watchList);
 
     set((state) => ({
-      lists: [...(state.lists || []), list],
+      watchList: [...(state.watchList || []), watchList],
+    }));
+  },
+  getWatchList: async (uid) => {
+    const watchList = await dbApi.getDBUserLists(uid);
+    set(() => ({
+      watchList: watchList || [],
     }));
   },
 
@@ -295,66 +375,12 @@ const useAppStore = create((set, get) => ({
 
     set({ toggleWatchLaterBoolean: result });
 
-    // const user = get().currentUser;
-    // if (!user) return;
-
-    // const movieId = String(movie.movieId || movie.id);
-
-    // set((state) => {
-    //   const safeWatchList = state.watchList || [];
-    //   const targetIndex = safeWatchList.findIndex(
-    //     (item) => item.uid === user.uid
-    //   );
-
-    //   const movieData = {
-    //     movieId,
-    //     poster_path: movie.poster_path,
-    //     title: movie.title,
-    //     release_date: movie.release_date,
-    //   };
-
-    //   if (targetIndex === -1) {
-    //     return {
-    //       watchList: [
-    //         ...safeWatchList,
-    //         {
-    //           uid: user.uid,
-    //           watchList: [movieData],
-    //         },
-    //       ],
-    //     };
-    //   }
-
-    //   const nextWatchList = [...safeWatchList];
-    //   const currentUserWatchList = nextWatchList[targetIndex].watchList || [];
-
-    //   const exists = currentUserWatchList.some(
-    //     (item) => String(item.movieId) === movieId
-    //   );
-
-    //   nextWatchList[targetIndex] = {
-    //     ...nextWatchList[targetIndex],
-    //     watchList: exists
-    //       ? currentUserWatchList.filter(
-    //           (item) => String(item.movieId) !== movieId
-    //         )
-    //       : [...currentUserWatchList, movieData],
-    //   };
-
-    //   return { watchList: nextWatchList };
-    // });
   },
   checkToggleWatchLater : async (uid, movieId) => {
     const result = await dbApi.checkToggleWatchLater(uid, movieId);
 
     set({toggleWatcgLaterBoolean : result});
   },
-
-  // getToggleWatchLater : async ( uid ) => {
-  //   const result = await dbApi.getToggleWatchLater(uid);
-
-  //   set({watchList : result});
-  // },
 
   toggleWatch : async (toggleWatchBoolean, newFilm) => {
     const toggle = await dbApi.addUserFilm(toggleWatchBoolean, newFilm);
@@ -370,6 +396,44 @@ const useAppStore = create((set, get) => ({
   },
   
 
+    
+
+  addList: async (list) => {
+    await dbApi.addDBList(list);
+
+    set((state) => ({
+      lists: [...(state.lists || []), list],
+    }));
+  },
+  getUserLists: async (uid) => {
+    const userLists = await dbApi.getDBUserLists(uid);
+
+    set(() => ({
+      lists: userLists || [],
+    }));
+  },
+  getAllLists: async () => {
+    const allLists = await dbApi.getDBAllLists();
+
+    set(() => ({
+      allLists: allLists || [],
+    }));
+  },
+
+  addLikes: async (like) => {
+    await dbApi.addDBList(like);
+
+    set((state) => ({
+      likes: [...(state.likes || []), like],
+    }));
+  },
+  getLikes: async (uid) => {
+    const userLikes = await dbApi.getDBUserLists(uid);
+
+    set(() => ({
+      Likes: userLikes || [],
+    }));
+  },
 }));
 
 export default useAppStore;

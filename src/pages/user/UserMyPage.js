@@ -6,6 +6,14 @@ import "./UserMyPage.css";
 
 const UserMyPage = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  
+  // const loginUser = auth.currentUser;
+  // useEffect(() => {
+  //   if (!loginUser) {
+  //     navigate("/login");
+  //   }
+  // }, [loginUser]);
 
   const getTitle = () => {
     if (location.pathname.includes("/profile/edit")) return "Profile Edit";
