@@ -29,7 +29,7 @@ const MovieDetail = () => {
   const [reviewContent, setReviewContent] = useState("");
   // const [reviewLiked, setReviewLiked] = useState(false);
 
-  const reviewLiked = useAppStore((state) => state.reviewLiked);
+  // const reviewLiked = useAppStore((state) => state.reviewLiked);
   const setReviewLiked = useAppStore((state) => state.setReviewLiked);
   
   // const [reviews, setReviews] = useState([]);
@@ -41,7 +41,7 @@ const MovieDetail = () => {
   const [releaseInfo, setReleaseInfo] = useState([]);
   const [collection, setCollection] = useState(null);
 
-  const [rating, setRating] = useState(0);
+  const [rating, setRating] = useState(1);
   const [watched, setWatched] = useState(false);
 
   useEffect(() => {
@@ -53,7 +53,7 @@ const MovieDetail = () => {
     setCollection(null);
     setRecommendIndex(0);
     setReviewContent("");
-    setRating(0);
+    setRating(1);
     setWatched(false);
 
     window.scrollTo(0, 0);
@@ -111,17 +111,9 @@ const MovieDetail = () => {
 
   useEffect(() => {
     setRecommendIndex(0);
+    // checkDBReviewLike(loginUser?.uid, id);
     getMovieReview(id);
-  }, [id, getMovieReview]);
-    
-    // getDBReview(id); //리뷰 불러오기
-    // setReviewTitle("");
-    // setReviewText("");
-    // setReviews([]);
-
-    checkDBReviewLike(loginUser?.uid, id);
-    getMovieReview(id); //리뷰 불러오기
-  }, [id,loginUser]);
+  }, [id, getMovieReview, loginUser]);
 
   const trailer = movie?.videos?.results?.find(
     (video) => video.site === "YouTube" && video.type === "Trailer"
@@ -202,6 +194,10 @@ const MovieDetail = () => {
     }
 
     if (!reviewContent.trim()) return;
+    if (rating < 1) {
+      alert("별점은 최소 1점 이상 선택해주세요.");
+      return;
+    }
 
     const alreadyReviewed = movieReviews.find(
       (review) => review.uid === loginUser.uid
@@ -232,7 +228,7 @@ const MovieDetail = () => {
 
     await addReview(newReview);
     setReviewContent("");
-    setRating(0);
+    setRating(1);
     setWatched(false);
   };
 
@@ -294,10 +290,6 @@ const MovieDetail = () => {
       await addReviewLiked(reviewLiked, likedPayload, loginUser.uid, id);
     } catch (error) {
       console.error("좋아요 처리 실패", error);
-      addReviewLiked(reviewLiked, liked, loginUser.uid, id);
-    }else{
-      alert('로그인 후에 시도해주세요.')
-      navigate('/login', {state:{from:location}});
     }
   };
 

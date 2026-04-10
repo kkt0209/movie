@@ -11,7 +11,7 @@ const ReviewSection = ({
   onToggleWatched = () => {},
   watchLater = false,
   onToggleWatchLater = () => {},
-  rating = 0,
+  rating = 1,
   onChangeRating = () => {},
 }) => {
   
