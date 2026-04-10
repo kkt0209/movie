@@ -31,6 +31,12 @@ const MovieDetail = () => {
 
   const reviewLiked = useAppStore((state) => state.reviewLiked);
   const setReviewLiked = useAppStore((state) => state.setReviewLiked);
+
+  const checkDBReviewLike = useAppStore((state) => state.checkReviewLike);
+
+  const toggleWatch = useAppStore((state) => state.toggleWatch);
+  const toggleWatchBoolen = useAppStore((state) => state.toggleWatchBoolen);
+  const checkToggleWatch = useAppStore((state) => state.checkToggleWatch);
   
   // const [reviews, setReviews] = useState([]);
   // const [reviewTitle, setReviewTitle] = useState("");
@@ -112,16 +118,14 @@ const MovieDetail = () => {
   useEffect(() => {
     setRecommendIndex(0);
     getMovieReview(id);
-  }, [id, getMovieReview]);
+    checkDBReviewLike(loginUser?.uid, id);
+    checkToggleWatch(loginUser?.uid, id)
+  }, [id, getMovieReview, checkDBReviewLike]);
     
     // getDBReview(id); //리뷰 불러오기
     // setReviewTitle("");
     // setReviewText("");
     // setReviews([]);
-
-    checkDBReviewLike(loginUser?.uid, id);
-    getMovieReview(id); //리뷰 불러오기
-  }, [id,loginUser]);
 
   const trailer = movie?.videos?.results?.find(
     (video) => video.site === "YouTube" && video.type === "Trailer"
@@ -158,7 +162,7 @@ const MovieDetail = () => {
       ? movie.images.backdrops.slice(0, 6)
       : movie?.images?.posters?.slice(0, 6) || [];
 
-  const reviewLiked = useMemo(() => {
+  useMemo(() => {
     if (!loginUser?.uid) return false;
 
     return likes.some(
@@ -179,7 +183,15 @@ const MovieDetail = () => {
   }, [watchList, loginUser?.uid, id]);
 
   const handleToggleWatched = () => {
-    setWatched((prev) => !prev);
+
+    const newFilm = {
+      uid: loginUser?.uid,
+      movieId: id,
+      poster_path: movie.poster_path
+    }
+
+    toggleWatch(toggleWatchBoolen, newFilm);
+
   };
 
   const handleToggleWatchLater = () => {
@@ -294,10 +306,7 @@ const MovieDetail = () => {
       await addReviewLiked(reviewLiked, likedPayload, loginUser.uid, id);
     } catch (error) {
       console.error("좋아요 처리 실패", error);
-      addReviewLiked(reviewLiked, liked, loginUser.uid, id);
-    }else{
-      alert('로그인 후에 시도해주세요.')
-      navigate('/login', {state:{from:location}});
+      addReviewLiked(reviewLiked, likedPayload, loginUser.uid, id);
     }
   };
 
@@ -322,7 +331,7 @@ const MovieDetail = () => {
         collectionMovies={collectionMovies}
         liked={reviewLiked}
         onCheckLiked={reviewLikedCheck}
-        watched={watched}
+        watched={toggleWatchBoolen}
         onToggleWatched={handleToggleWatched}
         watchLater={watchLater}
         onToggleWatchLater={handleToggleWatchLater}

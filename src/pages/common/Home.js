@@ -20,7 +20,7 @@ const Home = () => {
 
     const [popular, setPopular] = useState([])
     const [topRated, setTopRated] = useState([]);
-const [nowPlaying, setNowPlaying] = useState([]);
+    const [nowPlaying, setNowPlaying] = useState([]);
 
     useEffect(() => {
         const fetchAllMovies = async () => {

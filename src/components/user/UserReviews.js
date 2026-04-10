@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import useAppStore from "store/useAppStore";
 import "./UserReviews.css";
 
@@ -26,6 +26,8 @@ const UserReviews = () => {
       getUserReview(id);
     }
   }, [id, getUserReview]);
+
+  
 
   const groupedReviews = useMemo(() => {
     if (!userReviews || userReviews.length === 0) return [];
