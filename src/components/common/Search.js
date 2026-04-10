@@ -12,10 +12,10 @@ const Search = ({ query, onSearchChange }) => {
         setTitle(query);
     }, [query]);
 
-   // const setSearchResults = useAppStore((state) => state.setSearchResults);
+    // const setSearchResults = useAppStore((state) => state.setSearchResults);
 
 
-   const handleChange = (e) => {
+    const handleChange = (e) => {
         const value = e.target.value;
         setTitle(value);
         onSearchChange?.(value);
@@ -28,7 +28,12 @@ const Search = ({ query, onSearchChange }) => {
         }
         setSearchParams(nextParams);
     };
-    
+
+    const SearchDetail = () => {
+        setIsFilterOpen(true);
+
+    }
+
     return (
 
         <div id="searchbox">
@@ -53,14 +58,18 @@ const Search = ({ query, onSearchChange }) => {
                     상세검색🔍
                 </span>*/}
 
+            <button onClick={SearchDetail} id = "detailbtn" >
+                상세검색🔍
+            </button>
+
             {isFilterOpen && (
                 <DetailSearch onClose={() => setIsFilterOpen(false)} />
             )}
         </div>
-        
+
     )
 
 
 }
 
-    export default Search;
+export default Search;
