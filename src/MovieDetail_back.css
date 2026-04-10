@@ -58,10 +58,9 @@ body {
 }
 
 .hero-main {
-  display: grid;
-  grid-template-columns: 240px minmax(0, 1fr) 300px;
-  gap: 24px;
-  align-items: start;
+  display: flex;
+  gap: 22px;
+  align-items: flex-start;
   padding-top: 140px;
 }
 
@@ -74,10 +73,11 @@ body {
 ========================= */
 
 .hero-left-column {
-  width: 100%;
+  width: 220px;
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 18px;
 }
 
 .poster-box {
@@ -93,11 +93,11 @@ body {
 
 .hero-side-card {
   width: 100%;
-  padding: 22px;
-  border-radius: 18px;
+  padding: 18px;
+  border-radius: 16px;
   background-color: rgba(20, 24, 28, 0.72);
   backdrop-filter: blur(8px);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
 }
 
 .hero-side-title {
@@ -120,13 +120,12 @@ body {
 ========================= */
 
 .info-box {
-  width: 100%;
-  min-width: 0;
+  flex: 0 1 680px;
+  max-width: 680px;
   padding: 22px 24px;
   border-radius: 18px;
-  background-color: rgba(20, 24, 28, 0.72);
+  background-color: rgba(20, 24, 28, 0.5);
   backdrop-filter: blur(8px);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
 }
 
 .info-box h1 {
@@ -322,13 +321,14 @@ body {
 ========================= */
 
 .hero-review-panel {
-  width: 100%;
-  min-width: 0;
-  padding: 22px;
+  width: 270px;
+  flex-shrink: 0;
+  padding: 18px;
   border-radius: 18px;
-  background-color: rgba(20, 24, 28, 0.72);
+  background-color: rgba(10, 12, 16, 0.86);
   backdrop-filter: blur(8px);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  align-self: flex-start;
   overflow: hidden;
 }
 
