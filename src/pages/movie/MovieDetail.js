@@ -29,7 +29,7 @@ const MovieDetail = () => {
   const [reviewContent, setReviewContent] = useState("");
   // const [reviewLiked, setReviewLiked] = useState(false);
 
-  const reviewLiked = useAppStore((state) => state.reviewLiked);
+  // const reviewLiked = useAppStore((state) => state.reviewLiked);
   const setReviewLiked = useAppStore((state) => state.setReviewLiked);
 
   const checkDBReviewLike = useAppStore((state) => state.checkReviewLike);
@@ -47,7 +47,7 @@ const MovieDetail = () => {
   const [releaseInfo, setReleaseInfo] = useState([]);
   const [collection, setCollection] = useState(null);
 
-  const [rating, setRating] = useState(0);
+  const [rating, setRating] = useState(1);
   const [watched, setWatched] = useState(false);
 
   useEffect(() => {
@@ -59,7 +59,7 @@ const MovieDetail = () => {
     setCollection(null);
     setRecommendIndex(0);
     setReviewContent("");
-    setRating(0);
+    setRating(1);
     setWatched(false);
 
     window.scrollTo(0, 0);
@@ -117,6 +117,7 @@ const MovieDetail = () => {
 
   useEffect(() => {
     setRecommendIndex(0);
+    // checkDBReviewLike(loginUser?.uid, id);
     getMovieReview(id);
     checkDBReviewLike(loginUser?.uid, id);
     checkToggleWatch(loginUser?.uid, id)
@@ -214,6 +215,10 @@ const MovieDetail = () => {
     }
 
     if (!reviewContent.trim()) return;
+    if (rating < 1) {
+      alert("별점은 최소 1점 이상 선택해주세요.");
+      return;
+    }
 
     const alreadyReviewed = movieReviews.find(
       (review) => review.uid === loginUser.uid
@@ -244,7 +249,7 @@ const MovieDetail = () => {
 
     await addReview(newReview);
     setReviewContent("");
-    setRating(0);
+    setRating(1);
     setWatched(false);
   };
 
