@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import useAppStore from "store/useAppStore";
 import "./UserLists.css";
@@ -6,9 +6,17 @@ import "./UserLists.css";
 const UserLists = () => {
   const { id } = useParams();
   const loginUser = useAppStore((state) => state.currentUser);
-  const storeLists = useAppStore((state) => state.lists || []);
 
-  const lists = storeLists.filter((list) => list?.uid === loginUser?.uid);
+  const getUserLists = useAppStore((state) => state.getUserLists);
+  const lists = useAppStore((state) => state.lists || []);
+  // const storeLists = useAppStore((state) => state.lists || []);
+  // const lists = storeLists.filter((list) => list?.uid === loginUser?.uid);
+
+  useEffect(() => {
+    if (loginUser?.uid) {
+      getUserLists(loginUser.uid);
+    }
+  }, [loginUser?.uid, getUserLists]);
 
   const getListId = (list, index) =>
     list.id || `${list.uid}-${index}-${list.title}`;
