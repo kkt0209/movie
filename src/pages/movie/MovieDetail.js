@@ -29,7 +29,7 @@ const MovieDetail = () => {
   const [reviewContent, setReviewContent] = useState("");
   // const [reviewLiked, setReviewLiked] = useState(false);
 
-  // const reviewLiked = useAppStore((state) => state.reviewLiked);
+  const reviewLiked = useAppStore((state) => state.reviewLiked);
   const setReviewLiked = useAppStore((state) => state.setReviewLiked);
 
   const checkDBReviewLike = useAppStore((state) => state.checkReviewLike);
