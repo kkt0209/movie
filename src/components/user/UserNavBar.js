@@ -21,9 +21,9 @@ const UserNavbar = () => {
       if (id) fetchUserInfo();
   }, [id]);
 
-  const films = useAppStore((state) => state.films).filter(
+  /*const films = useAppStore((state) => state.films).filter(
     (film) => film?.uid === loginUser?.uid
-  );
+  ); */
 
   useEffect(() => {
       const fetchUserInfo = async () => {
