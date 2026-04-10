@@ -21,13 +21,14 @@ const UserProfile = () => {
 
     return (
         <>
-            {id === loginUser?.uid && <Link to='/user/profile/edit'><button>프로필 수정</button></Link>}
+            {id === loginUser?.uid && (
+                <div className="user-profile-action-bar">
+                    <Link to='/user/profile/edit' className="user-profile-edit-link">
+                        프로필 수정
+                    </Link>
+                </div>
+            )}
             <div className="user-profile-card">
-                {/* <div className="usr-profile-row">
-                    <span className="user-profile-label">이메일 : </span>
-                    <span className="user-profile-value">{userInfo?.email}</span>
-                </div> */}
-
                 <div className=" user-profile-row">
                     <span className="user-profile-label">이름 : </span>
                     <span className="user-profile-value">{userInfo?.name}</span>

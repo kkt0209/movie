@@ -13,10 +13,10 @@ const UserLists = () => {
   // const lists = storeLists.filter((list) => list?.uid === loginUser?.uid);
 
   useEffect(() => {
-    if (loginUser?.uid) {
-      getUserLists(loginUser.uid);
+    if (id) {
+      getUserLists(id);
     }
-  }, [loginUser?.uid, getUserLists]);
+  }, [id, getUserLists]);
 
   const getListId = (list, index) =>
     list.id || `${list.uid}-${index}-${list.title}`;

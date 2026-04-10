@@ -61,7 +61,7 @@ const ReviewSection = ({
               className={`review-status-btn ${liked ? "active" : ""}`}
               onClick={onCheckLiked}
             >
-              {liked ? "좋아요 취소" : "좋아요"}
+              좋아요
             </button>
 
             <button

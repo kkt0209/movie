@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import DetailSearch from "./DetailSearch";
 
+const SEARCH_DEBOUNCE_MS = 400;
 
 const Search = ({ query, onSearchChange }) => {
     const [title, setTitle] = useState(query);
@@ -19,21 +20,23 @@ const Search = ({ query, onSearchChange }) => {
         const value = e.target.value;
         setTitle(value);
         onSearchChange?.(value);
+    };
 
+    useEffect(() => {
         const nextParams = new URLSearchParams(searchParams);
-        if (value.trim()) {
-            nextParams.set("query", value);
+        if (title.trim()) {
+            nextParams.set("query", title);
         } else {
             nextParams.delete("query");
         }
-        setSearchParams(nextParams);
-    };
 
-    const SearchDetail = () => {
-        setIsFilterOpen(true);
+        const timeoutId = window.setTimeout(() => {
+            setSearchParams(nextParams);
+        }, SEARCH_DEBOUNCE_MS);
 
-    }
-
+        return () => window.clearTimeout(timeoutId);
+    }, [title, searchParams, setSearchParams]);
+    
     return (
 
         <div id="searchbox">
